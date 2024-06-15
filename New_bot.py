@@ -1,2 +1,4 @@
 import aiogram
 
+API_TOKEN = "6271098507:AAE9MbgC7n2O-4JkcYsNTBO3ZH3L7AEChGM"
+
