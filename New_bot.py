@@ -1,5 +1,8 @@
 import asyncio
 from aiogram import Bot, Dispatcher,types
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, ReplyKeyboardRemove
+from aiogram.filters.command import Command
+
 from decouple import config
 import requests
 from bs4 import BeautifulSoup
@@ -13,12 +16,12 @@ dp = Dispatcher()
 ############################################
 
 async def on_startup():
-    print("Bot start working🚀")
+    print("Bot has started working🚀", end = '\n\n')
 
 
-@dp.message()
-async def echo(message: types.Message):
-    await message.answer(text=message.text)
+@dp.message(Command('start'))
+async def start_menu(message: types.Message):
+    await message.answer(f'Здравствуйте, {message.from_user.first_name}!\nЭтот бот должен упростить мониторинг финансовых изменений на рынке валют.\n Ориентируйтесь по кнопкам!')
 
 
 ############################################
@@ -29,4 +32,7 @@ async def main() -> None:
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    try:
+        asyncio.run(main())
+    except KeyboardInterrupt:
+        print('Bot has stopped working❌')
