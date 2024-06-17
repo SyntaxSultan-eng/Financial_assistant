@@ -1,10 +1,7 @@
 import asyncio
 from aiogram import Bot, Dispatcher
 from app.handlers import router
-
 from decouple import config
-import requests
-from bs4 import BeautifulSoup
 
 ############################################
 
@@ -18,8 +15,8 @@ async def on_startup():
     print("Bot has started working🚀", end = '\n\n')
 
 async def main() -> None:
-    dp.include_router(router=router)
-    dp.startup.register(on_startup)
+    dp.include_router(router = router)
+    dp.startup.register(callback = on_startup)
     await dp.start_polling(bot)
 
 ############################################
