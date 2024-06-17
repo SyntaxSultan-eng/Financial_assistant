@@ -12,6 +12,10 @@ dp = Dispatcher()
 
 ############################################
 
+async def on_startup():
+    print("Bot start working🚀")
+
+
 @dp.message()
 async def echo(message: types.Message):
     await message.answer(text=message.text)
@@ -20,6 +24,7 @@ async def echo(message: types.Message):
 ############################################
 
 async def main() -> None:
+    dp.startup.register(on_startup)
     await dp.start_polling(bot)
 
 
