@@ -1,4 +1,4 @@
-from aiogram import types, Router
+from aiogram import types, Router,F
 from aiogram.filters import Command
 from app.keyboard import main_keyboard
 
@@ -14,3 +14,7 @@ async def start_menu(message: types.Message):
         f'Этот бот должен упростить мониторинг финансовых изменений на рынке валют.\nОриентируйтесь по кнопкам!',
         reply_markup=main_keyboard
     )
+
+@router.message(F.text == 'Курс валют(ЦБ РФ)🏛️')
+async def currency(message: types.Message):
+    pass
