@@ -1,5 +1,6 @@
 import asyncio
 from aiogram import Bot, Dispatcher
+from aiogram.fsm.storage.memory import MemoryStorage
 from app.handlers import router
 from decouple import config
 
@@ -7,7 +8,7 @@ from decouple import config
 
 API_TOKEN = config('API_KEY',default = '')
 bot = Bot(API_TOKEN)
-dp = Dispatcher()
+dp = Dispatcher(storage=MemoryStorage())
 
 ############################################
 
