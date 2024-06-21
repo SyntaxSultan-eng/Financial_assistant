@@ -1,4 +1,4 @@
-from aiogram.types import ReplyKeyboardMarkup,KeyboardButton
+from aiogram.types import ReplyKeyboardMarkup,KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
 
 main_keyboard = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text = 'Курс валют(ЦБ РФ)🏛️')],
@@ -8,3 +8,9 @@ main_keyboard = ReplyKeyboardMarkup(keyboard=[
     input_field_placeholder='Выберите режим',
 )
 
+setting_currency = InlineKeyboardMarkup(keyboard =[
+    [InlineKeyboardButton(text = "Мировые валюты💲",callback_data="world_currency")],
+    [InlineKeyboardButton(text="Конкретная валюта🔎", callback_data="need_currency")]
+],
+    resize_keyboard= True,
+)
