@@ -14,5 +14,20 @@ def get_currency(url : str) -> str:
     info = html_page.find(class_=need_class).text
     return info
 
-print(get_currency('https://yandex.ru/search/?text=доллар'))
+def get_all_currency() -> list:
+    
+    url = 'https://cbr.ru/currency_base/daily/'
+
+    page = requests.get(url,headers=headers)
+    html = BS(page.content, features='lxml')
+    all_values = html.find_all('td')
+
+    world_currency_num = ['840','978','156','826','392','756']
+    info_world_currency = []
+
+    for index in range(0,len(all_values),5):
+        if all_values[index].text in world_currency_num:
+            info_world_currency.append([item.text for item in all_values[index:index+5]])
+    return info_world_currency
+    
 
