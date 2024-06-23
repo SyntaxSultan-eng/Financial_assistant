@@ -6,13 +6,17 @@ headers = {
     "User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36 OPR/99.0.0.0 (Edition Yx GX)"
 }
 
+######################################################
+
 def get_currency(url : str) -> str:
     need_class = 'ConverterInfo-Rate'
     page = requests.get(url,headers=headers)
 
     html_page = BS(page.content, features='lxml')
-    info = html_page.find(class_=need_class).text
-    return info
+    info = html_page.find(class_=need_class)
+    if info is None:
+        return 'error'
+    return info.text
 
 def get_all_currency() -> list:
     
@@ -30,4 +34,4 @@ def get_all_currency() -> list:
             info_world_currency.append([item.text for item in all_values[index:index+5]])
     return info_world_currency
     
-
+######################################################
