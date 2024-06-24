@@ -1,6 +1,6 @@
 import requests
 from bs4 import BeautifulSoup as BS
-#import json
+import json
 
 headers = {
     "Accept" : "*/*",
@@ -35,7 +35,17 @@ headers = {
 #         info_world_currency.append([item.text for item in all_values[index:index+5]])
 # print(info_world_currency)
 ####################################################    
-    
-#https://yandex.ru/search/?text=курс+
-#with open("cross-currency.json","w") as file:
-#    json.dump(dict,file,indent = 4, ensure_ascii=False)
+
+################## all currency #####################################
+
+url = 'https://cbr.ru/currency_base/daily/'
+
+page = requests.get(url,headers=headers)
+html = BS(page.content, features='lxml')
+all_values = html.find_all('td')
+dict_values = {all_values[i].text: [all_values[x].text for x in range(i+1,i+5)] for i in range(0,len(all_values),5)}
+
+with open("all-currency.json","w",encoding='utf-8') as file:
+   json.dump(dict_values,file,indent = 4, ensure_ascii=False)
+
+######################################################################
