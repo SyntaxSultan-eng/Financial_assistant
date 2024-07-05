@@ -6,7 +6,7 @@ from aiogram.types import LinkPreviewOptions
 
 import app.keyboard as keyboards
 import app.parcer as parc
-
+import datetime
 
 #############################################
 
@@ -16,7 +16,7 @@ class Form(StatesGroup):
     need_currency = State()
 
 
-#############################################
+##################### Главные команды ########################
 
 @router.message(Command('start'))
 async def start_menu(message: types.Message):
@@ -28,6 +28,14 @@ async def start_menu(message: types.Message):
 @router.message(F.text == 'Курс валют(ЦБ РФ)🏛️')
 async def currency(message: types.Message):
     await message.answer("Выберите режим.", reply_markup=keyboards.setting_currency)
+
+@router.message(F.text == 'Рынок акций🌐')
+async def Market_stocks(message: types.Message):
+    await message.answer("Что вы хотите узнать из мира инвестиций?✍",reply_markup=keyboards.stocks_keyboard)
+
+@router.message(F.text == "Главное меню↩")
+async def return_menu(message: types.Message):
+    await message.answer("Возвращаю Вас на главное меню👨🏻‍💻", reply_markup=keyboards.main_keyboard)
 
 @router.message(Command('cancel'))
 async def choose_cancel(message: types.Message, state: FSMContext):
@@ -99,6 +107,7 @@ async def bad_end(callback: types.CallbackQuery, state: FSMContext):
         return
 
     await callback.message.delete()
+    await callback.message.answer("Хммм... Значит ошибка в программной части. Напишите дебилу-разработчику @Senior_kartofan о вашей проблеме.🛠️")
     await callback.message.answer(f"😎Тогда вот информация о вашей валюте в браузере: https://yandex.ru/search/?text={user_data['need_currency']}",
     reply_markup=keyboards.main_keyboard, link_preview_options=options_1)
 
@@ -117,7 +126,7 @@ async def find_currency(callback: types.CallbackQuery,state: FSMContext):
 async def print_currency(message: types.Message, state: FSMContext):
 
     await state.update_data(need_currency=message.text)
-    value = parc.get_currency(f"https://yandex.ru/search/?text=курс+{message.text}+к+рублю")
+    value = parc.get_currency(f"https://yandex.ru/search/?text={message.text}+к+рублю")
 
     if value == 'error':
         await message.answer("Что-то пошло не так.😱 Проверьте, Вы точно осознанно написали необходимую валюту?",reply_markup=keyboards.checkingNONE_inline_kb)
@@ -146,5 +155,45 @@ async def world_currency(callback: types.CallbackQuery):
 
         await callback.message.answer(f"💵{currency_nums} {сurrency_codename} ({currency_name}) - {currency_value}₽",
         reply_markup=keyboards.main_keyboard)
+
+#################################################################
+
+
+#################################################################
+
+################# Рынок акций🌐 ################################
+
+@router.message(F.text == "Взлеты дня💹")
+async def give_up_stocks(message: types.Message):
+    info_stocks = parc.growth_stocks()
+    current_time = datetime.datetime.now().strftime("%H:%M:%S")
+
+    for stock in info_stocks:
+        Code_name = stock[0][:4]
+        Full_name = stock[0][4:]
+        Change_percent = stock[1]
+        Price = stock[2]
+        Subject = stock[10]
+        await message.answer(f'(<b>{Code_name}</b>) {Full_name} ({Subject}) -> \n\n'
+        f'Изменения за день на <u><b>{Change_percent}</b></u>↗ -> \n\n<u>Текущая цена <b>{Price}</b></u>', parse_mode="HTML")
+
+    await message.answer(f"😎Вот первые <u><b>10</b></u> позиций в лидерах роста на момент времени {current_time}",reply_markup=keyboards.stocks_keyboard,parse_mode="HTML")
+
+@router.message(F.text == 'Падения дня📉')
+async def give_down_stocks(message: types.Message):
+    inf_stock = parc.drop_stocks()
+    current_time = datetime.datetime.now().strftime("%H:%M:%S")
+
+    for stock in inf_stock:
+        Code_name = stock[0][:4]
+        Full_name = stock[0][4:]
+        Change_percent = stock[1]
+        Price = stock[2]
+        Subject = stock[10]
+        await message.answer(f'(<b>{Code_name}</b>) {Full_name} ({Subject}) -> \n\n'
+        f'Изменения за день на <u><b>{Change_percent}</b></u>⬇ -> \n\n<u>Текущая цена <b>{Price}</b></u>', parse_mode="HTML")
+
+    await message.answer(f"😒Вот первые <u><b>10</b></u> позиций в лидерах падения〽 на момент времени {current_time}",reply_markup=keyboards.stocks_keyboard,parse_mode="HTML")
+
 
 #################################################################

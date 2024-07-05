@@ -1,8 +1,16 @@
 from aiogram.types import ReplyKeyboardMarkup,KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
 
 main_keyboard = ReplyKeyboardMarkup(keyboard=[
-    [KeyboardButton(text = 'Курс валют(ЦБ РФ)🏛️'),KeyboardButton(text = '📋Информация')]
+    [KeyboardButton(text = 'Курс валют(ЦБ РФ)🏛️'),KeyboardButton(text = 'Рынок акций🌐')]
 ], 
+    resize_keyboard= True,
+    input_field_placeholder='Выберите режим',
+)
+
+stocks_keyboard = ReplyKeyboardMarkup(keyboard=[
+    [KeyboardButton(text = "Взлеты дня💹"), KeyboardButton(text="Падения дня📉")],
+    [KeyboardButton(text = "Главное меню↩")]
+],
     resize_keyboard= True,
     input_field_placeholder='Выберите режим',
 )

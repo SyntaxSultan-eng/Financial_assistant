@@ -38,14 +38,46 @@ headers = {
 
 ################## all currency #####################################
 
-url = 'https://cbr.ru/currency_base/daily/'
+# url = 'https://cbr.ru/currency_base/daily/'
 
-page = requests.get(url,headers=headers)
-html = BS(page.content, features='lxml')
-all_values = html.find_all('td')
-dict_values = {all_values[i].text: [all_values[x].text for x in range(i+1,i+5)] for i in range(0,len(all_values),5)}
+# page = requests.get(url,headers=headers)
+# html = BS(page.content, features='lxml')
+# all_values = html.find_all('td')
+# dict_values = {all_values[i].text: [all_values[x].text for x in range(i+1,i+5)] for i in range(0,len(all_values),5)}
 
-with open("all-currency.json","w",encoding='utf-8') as file:
-   json.dump(dict_values,file,indent = 4, ensure_ascii=False)
+# with open("all-currency.json","w",encoding='utf-8') as file:
+#    json.dump(dict_values,file,indent = 4, ensure_ascii=False)
 
-######################################################################
+############################ increase ##########################################
+
+# url = 'https://ru.tradingview.com/markets/stocks-russia/market-movers-gainers/'
+
+# page = requests.get(url,headers=headers)
+# html = BS(page.content, features='lxml')
+# all_values = html.find_all(class_='row-RdUXZpkv listRow')
+
+# counter = 0
+# for item in all_values:
+#     counter += 1
+
+#     info = item.find_all(class_='cell-RLhfr_y4')
+#     print([text_info.text for text_info in info])
+#     if counter == 10:
+#         break
+
+
+############################# drop ########################################
+
+# url = "https://ru.tradingview.com/markets/stocks-russia/market-movers-losers/"
+# page = requests.get(url,headers=headers)
+# html_page = BS(page.content,features='lxml')
+# all_values = html_page(class_ ="row-RdUXZpkv listRow")
+
+# counter = 0
+# for item in all_values:
+#     counter += 1
+
+#     info = item.find_all(class_='cell-RLhfr_y4')
+#     print([text_info.text for text_info in info])
+#     if counter == 10:
+#         break

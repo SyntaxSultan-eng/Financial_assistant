@@ -35,3 +35,41 @@ def get_all_currency() -> list:
     return info_world_currency
     
 ######################################################
+
+def growth_stocks() -> list:
+
+    url = 'https://ru.tradingview.com/markets/stocks-russia/market-movers-gainers/'
+    page = requests.get(url,headers=headers)
+    html_page = BS(page.content,features='lxml')
+    all_values = html_page(class_ = 'row-RdUXZpkv listRow')
+
+    # Возьмём первые 10 позиций
+    counter = 0
+    all_positions = []
+    for item in all_values:
+        counter += 1
+        all_positions.append([item_info.text for item_info in item])
+        if counter == 10:
+            break
+    return all_positions
+
+def drop_stocks() -> list:
+
+    url = "https://ru.tradingview.com/markets/stocks-russia/market-movers-losers/"
+    page = requests.get(url,headers=headers)
+    html_page = BS(page.content,features='lxml')
+    all_values = html_page(class_ ="row-RdUXZpkv listRow")
+
+    # Возьмём первые 10 позиций
+    counter = 0
+    all_positions = []
+    for item in all_values:
+        counter += 1
+        all_positions.append([item_info.text for item_info in item])
+        if counter == 10:
+            break
+    return all_positions
+
+
+########################################################
+
