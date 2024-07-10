@@ -6,6 +6,13 @@ headers = {
     "User-Agent" : "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/113.0.0.0 Safari/537.36 OPR/99.0.0.0 (Edition Yx GX)"
 }
 
+
+############################ url parcer ##############
+
+#https://ru.tradingeconomics.com/commodities - сырье
+#https://cbr.ru/currency_base/daily/ - валюта
+#https://ru.tradingview.com/markets/stocks-russia/market-movers-gainers/ - акции
+
 ######################################################
 
 def get_currency(url : str) -> str:
@@ -41,7 +48,7 @@ def growth_stocks() -> list:
     url = 'https://ru.tradingview.com/markets/stocks-russia/market-movers-gainers/'
     page = requests.get(url,headers=headers)
     html_page = BS(page.content,features='lxml')
-    all_values = html_page(class_ = 'row-RdUXZpkv listRow')
+    all_values = html_page.find_all(class_ = 'row-RdUXZpkv listRow')
 
     # Возьмём первые 10 позиций
     counter = 0
@@ -58,7 +65,7 @@ def drop_stocks() -> list:
     url = "https://ru.tradingview.com/markets/stocks-russia/market-movers-losers/"
     page = requests.get(url,headers=headers)
     html_page = BS(page.content,features='lxml')
-    all_values = html_page(class_ ="row-RdUXZpkv listRow")
+    all_values = html_page.find_all(class_ ="row-RdUXZpkv listRow")
 
     # Возьмём первые 10 позиций
     counter = 0
