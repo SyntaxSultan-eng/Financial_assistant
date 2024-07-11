@@ -134,8 +134,6 @@ async def print_currency(message: types.Message, state: FSMContext):
         await message.answer(value)
         await message.answer("Результат соответствует ожиданиям?",reply_markup=keyboards.checking_inline_kb)
 
-#############################################
-
 ############## Мировые Валюты################# 
 
 @router.callback_query(F.data == "world_currency")
@@ -155,8 +153,6 @@ async def world_currency(callback: types.CallbackQuery):
 
         await callback.message.answer(f"💵{currency_nums} {сurrency_codename} ({currency_name}) - {currency_value}₽",
         reply_markup=keyboards.main_keyboard)
-
-#################################################################
 
 
 #################################################################
@@ -196,4 +192,22 @@ async def give_down_stocks(message: types.Message):
     await message.answer(f"😒Вот первые <u><b>10</b></u> позиций в лидерах падения〽 на момент времени {current_time}",reply_markup=keyboards.stocks_keyboard,parse_mode="HTML")
 
 
-#################################################################
+################## Сырье ########################################
+
+@router.message(F.text == "Рынок Сырья⛏️")
+async def menu_material(message: types.Message):
+    await message.answer("Какой сектор экономики Вас интересует?", reply_markup=keyboards.material_keyboard)
+
+@router.message(F.text =="Энергетика⚡")
+async def get_energy(message: types.Message):
+    energy_data = parc.energy()
+    current_time = datetime.datetime.now().strftime("%H:%M:%S")
+
+    for info_list in energy_data:
+        name = info_list[0]
+        price,change_day,percent = info_list[1]
+
+        await message.answer(f"Цена на '{name.capitalize()}' за день изменилась на {change_day}({percent}).\n\nЦена {name.capitalize()} - {price}")
+    await message.answer(f"Вот <u><b>6</b></u> позиций цен на сырьё в сфере энергетики на момент времени {current_time}",reply_markup=keyboards.material_keyboard,parse_mode="HTML")
+
+###################################################################

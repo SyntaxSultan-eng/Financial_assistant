@@ -84,35 +84,21 @@ headers = {
 
 ###########################################################################
 
-url = 'https://ru.tradingeconomics.com/commodities'
-page = requests.get(url,headers=headers)
-html_page = BS(page.content, features='lxml')
+# url = 'https://ru.tradingeconomics.com/commodities'
+# page = requests.get(url,headers=headers)
+# html_page = BS(page.content, features='lxml')
 
-all_names_BS = html_page.find_all("td",class_="datatable-item-first")
-all_names_list = []
-for item in all_names_BS:
-    all_names_list.append(item.find('b').text)
-################################################
-all_prices = html_page.find_all("td",{"class" : 'datatable-item', "id" : "p"})
-all_price_list = []
-for item in all_prices:
-    all_price_list.append(item.text.strip())
-################################################
-all_changes = html_page.find_all("td",{"class" : 'datatable-item', "id" : 'nch'})
-all_changeprice_list = []
+# all_names = html_page.find_all("td",{'class' : "datatable-item-first"})
+# all_prices = html_page.find_all("td", {"class":"datatable-item","id":"p"})
+# all_changes = html_page.find_all("td",{"class" : 'datatable-item', "id" : 'nch'})
+# all_changes_percent = html_page.find_all("td",{"class":"datatable-item","id":"pch"})
+# all_info = {}
+# counter = 0
 
-for item in all_changes:
-    all_changeprice_list.append(item.text.strip())
-###############################################
-all_changes_percent = html_page.find_all("td",{"class" : 'datatable-item', "id" : 'pch'})
-all_changeprice_percent_list = []
+# for item in all_names:
+#     all_info[item.find('b').text.strip()] = (all_prices[counter].text.strip(),all_changes[counter].text.strip(),
+#     all_changes_percent[counter].text.strip())
+#     counter += 1
+# print(all_info)
 
-for item in all_changes_percent:
-    all_changeprice_percent_list.append(item.text.strip())
-####################################################
-
-print(all_price_list)
-print('______')
-print(all_changeprice_list)
-print('______')
-print(all_changeprice_percent_list)
+######################################################################

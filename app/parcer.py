@@ -77,6 +77,50 @@ def drop_stocks() -> list:
             break
     return all_positions
 
+######################################################
+
+def get_all_material() -> dict:
+    url = 'https://ru.tradingeconomics.com/commodities'
+    page = requests.get(url,headers=headers)
+    html_page = BS(page.content, features='lxml')
+
+    all_names = html_page.find_all("td",{'class' : "datatable-item-first"})
+    all_prices = html_page.find_all("td", {"class":"datatable-item","id":"p"})
+    all_changes = html_page.find_all("td",{"class" : 'datatable-item', "id" : 'nch'})
+    all_changes_percent = html_page.find_all("td",{"class":"datatable-item","id":"pch"})
+    all_info = {}
+    counter = 0
+
+    for item in all_names:
+        all_info[item.find('b').text.strip()] = (all_prices[counter].text.strip(),all_changes[counter].text.strip(),
+        all_changes_percent[counter].text.strip())
+        counter += 1
+
+    return all_info
+
+def energy() -> list:
+    all_info = get_all_material()
+    need_material = ["Нефть", "Нефть марки Brent","Газ","Бензин","Пропан","Каменный уголь"]
+    energy_data = [[name,all_info[name]] for name in need_material]
+    return energy_data
+
+def metall() -> list:
+    all_info = get_all_material()
+    need_material = ["Золото","Серебро","Медь", "Сталь","Платина"]
+    metal_data = [[name,all_info[name]] for name in need_material]
+    return metal_data
+
+def agriculture() -> list:
+    all_info = get_all_material()
+    need_material = ["Пшеница", "Молоко","Резина","Кофе","Картофель","Сахар"]
+    agriculture_data = [[name,all_info[name]] for name in need_material]
+    return agriculture_data
+
+def industry() -> list:
+    all_info = get_all_material()
+    need_material = ["Алюминий", "Олово","полиэтилен","Никель","Полипропилен"]
+    industry_data = [[name,all_info[name]] for name in need_material]
+    return industry_data
 
 ########################################################
 
