@@ -29,10 +29,12 @@ async def start_menu(message: types.Message):
 async def currency(message: types.Message):
     await message.answer("Выберите режим.", reply_markup=keyboards.setting_currency)
 
+@router.message(Command("stocks"))
 @router.message(F.text == 'Рынок акций🌐')
 async def Market_stocks(message: types.Message):
     await message.answer("Что вы хотите узнать из мира инвестиций?✍",reply_markup=keyboards.stocks_keyboard)
 
+@router.message(Command("menu"))
 @router.message(F.text == "Главное меню↩")
 async def return_menu(message: types.Message):
     await message.answer("Возвращаю Вас на главное меню👨🏻‍💻", reply_markup=keyboards.main_keyboard)
@@ -255,9 +257,17 @@ async def get_industry(message: types.Message):
     await message.answer(f"Вот <u><b>6</b></u> позиций цен на сырьё в <u>сфере промышленности</u> на момент времени {current_time}.\n\nВсе цены представлены в долларах$$$",
         reply_markup=keyboards.material_keyboard,parse_mode="HTML")
     
-###################################################################
+#################################################################
 
+################# Информация📜 ################################
 
+@router.message(F.text == "Информация📜")
+async def get_info(message : types.Message):
+    await message.answer("Этот бот небольшой пет-проект. Хотелось сделать помощника по финансовому рынку и не только.\n\n"
+    "github разработчика - <u>https://github.com/SyntaxSultan-eng</u> (Пока там ничего нет, но вдруг что-то изменится)", reply_markup=keyboards.Information_kb, parse_mode="HTML")
 
+@router.message(F.text == "Версии бота🤖")
+async def versions(message: types.Message):
+    await message.answer("Версия бота - <u><b>0.1version</b></u> (Дата выхода: 12.07.2024  20:46)",reply_markup=keyboards.main_keyboard,parse_mode="HTML")
 
-
+#################################################################

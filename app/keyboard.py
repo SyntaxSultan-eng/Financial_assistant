@@ -1,7 +1,8 @@
 from aiogram.types import ReplyKeyboardMarkup,KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
 
 main_keyboard = ReplyKeyboardMarkup(keyboard=[
-    [KeyboardButton(text = 'Курс валют(ЦБ РФ)🏛️'),KeyboardButton(text = 'Рынок акций🌐')]
+    [KeyboardButton(text = 'Курс валют(ЦБ РФ)🏛️'),KeyboardButton(text = 'Рынок акций🌐')],
+    [KeyboardButton(text = "Информация📜")]
 ], 
     resize_keyboard= True,
     input_field_placeholder='Выберите режим',
@@ -42,3 +43,8 @@ checking_inline_kb = InlineKeyboardMarkup(inline_keyboard=[
     resize_keyboard = True,
 )
 #################################################
+Information_kb = ReplyKeyboardMarkup(keyboard=[
+    [KeyboardButton(text="Версии бота🤖"), KeyboardButton(text= "Главное меню↩")]
+],
+    resize_keyboard=True
+)
