@@ -196,7 +196,8 @@ async def give_down_stocks(message: types.Message):
 
 @router.message(F.text == "Рынок Сырья⛏️")
 async def menu_material(message: types.Message):
-    await message.answer("Какой сектор экономики Вас интересует?", reply_markup=keyboards.material_keyboard)
+    await message.answer("Какой сектор экономики Вас интересует? Данные основаны на <u><b>Фьючерсных контрактах</b></u>", 
+        reply_markup=keyboards.material_keyboard, parse_mode="HTML")
 
 @router.message(F.text =="Энергетика⚡")
 async def get_energy(message: types.Message):
@@ -207,7 +208,56 @@ async def get_energy(message: types.Message):
         name = info_list[0]
         price,change_day,percent = info_list[1]
 
-        await message.answer(f"Цена на '{name.capitalize()}' за день изменилась на {change_day}({percent}).\n\nЦена {name.capitalize()} - {price}")
-    await message.answer(f"Вот <u><b>6</b></u> позиций цен на сырьё в сфере энергетики на момент времени {current_time}",reply_markup=keyboards.material_keyboard,parse_mode="HTML")
+        await message.answer(f"Цена на <u>{name.capitalize()}</u> за день <u>изменилась</u> на <b>{change_day}$</b> (<u><b>{percent}</b></u>)."
+            f"->\n\nТекущая цена - <u><b>{price}$</b></u>", parse_mode="HTML")
+    await message.answer(f"Вот <u><b>6</b></u> позиций цен на сырьё в <u>сфере энергетики</u> на момент времени {current_time}.\n\nВсе цены представлены в долларах$$$",
+        reply_markup=keyboards.material_keyboard,parse_mode="HTML")
 
+@router.message(F.text == "Металлы🔩")
+async def get_metall(message: types.Message):
+    metall_data = parc.metall()
+    current_time = datetime.datetime.now().strftime("%H:%M:%S")
+    
+    for info_list in metall_data:
+        name = info_list[0]
+        price,change_day,percent = info_list[1]
+
+        await message.answer(f"Цена на <u>{name.capitalize()}</u> за день <u>изменилась</u> на <b>{change_day}$</b> (<u><b>{percent}</b></u>)."
+            f"->\n\nТекущая цена - <u><b>{price}$</b></u>", parse_mode="HTML")
+    await message.answer(f"Вот <u><b>5</b></u> позиций цен на сырьё в <u>сфере металлов</u> на момент времени {current_time}.\n\nВсе цены представлены в долларах$$$",
+        reply_markup=keyboards.material_keyboard,parse_mode="HTML")
+
+@router.message(F.text == "Сельское хоз. 🌱")
+async def get_agriculture(message: types.Message):
+    agriculture_data = parc.agriculture()
+    current_time = datetime.datetime.now().strftime("%H:%M:%S")
+    
+    for info_list in agriculture_data:
+        name = info_list[0]
+        price,change_day,percent = info_list[1]
+
+        await message.answer(f"Цена на <u>{name.capitalize()}</u> за день <u>изменилась</u> на <b>{change_day}$</b> (<u><b>{percent}</b></u>)."
+            f"->\n\nТекущая цена - <u><b>{price}$</b></u>", parse_mode="HTML")
+    await message.answer(f"Вот <u><b>6</b></u> позиций цен на сырьё в <u>сфере сельского хозяйства</u> на момент времени {current_time}.\n\nВсе цены представлены в долларах$$$",
+        reply_markup=keyboards.material_keyboard,parse_mode="HTML")
+
+@router.message(F.text == "Промышленность⚙️")
+async def get_industry(message: types.Message):
+    industry_data = parc.industry()
+    current_time = datetime.datetime.now().strftime("%H:%M:%S")
+    
+    for info_list in industry_data:
+        name = info_list[0]
+        price,change_day,percent = info_list[1]
+
+        await message.answer(f"Цена на <u>{name.capitalize()}</u> за день <u>изменилась</u> на <b>{change_day}$</b> (<u><b>{percent}</b></u>)."
+            f"->\n\nТекущая цена - <u><b>{price}$</b></u>", parse_mode="HTML")
+    await message.answer(f"Вот <u><b>6</b></u> позиций цен на сырьё в <u>сфере промышленности</u> на момент времени {current_time}.\n\nВсе цены представлены в долларах$$$",
+        reply_markup=keyboards.material_keyboard,parse_mode="HTML")
+    
 ###################################################################
+
+
+
+
+
