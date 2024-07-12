@@ -271,3 +271,5 @@ async def versions(message: types.Message):
     await message.answer("Версия бота - <u><b>0.1version</b></u> (Дата выхода: 12.07.2024  20:46)",reply_markup=keyboards.main_keyboard,parse_mode="HTML")
 
 #################################################################
+
+#0.1 version
