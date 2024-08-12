@@ -24,10 +24,6 @@ async def start_menu(message: types.Message):
         f'Этот бот должен упростить мониторинг финансовых изменений на рынке валют.\nОриентируйтесь по кнопкам!',
         reply_markup=keyboards.main_keyboard
     )
-@router.message(Command('currency'))
-@router.message(F.text == 'Курс валют(ЦБ РФ)🏛️')
-async def currency(message: types.Message):
-    await message.answer("Выберите режим.", reply_markup=keyboards.setting_currency)
 
 @router.message(Command("stocks"))
 @router.message(F.text == 'Рынок акций🌐')
@@ -52,95 +48,11 @@ async def choose_cancel(message: types.Message, state: FSMContext):
 
 ################# Курс валют(ЦБ РФ)🏛️############################
 
-################### Конкретная валюта ###########################
-@router.callback_query(F.data == 'True_info')
-async def correction(callback: types.CallbackQuery, state: FSMContext):
-    options_1 = LinkPreviewOptions(is_disabled=True)
-    user_data = await state.get_data()
-
-    #Блок кода, чтобы избежать проблему с командой cancel
-    if len(user_data) == 0:
-        await callback.message.delete()
-        return
-
-    await callback.message.delete()
-    await callback.message.answer("Хммм... Значит ошибка в программной части. Напишите дебилу-разработчику @Senior_kartofan о вашей проблеме.🛠️")
-    await callback.message.answer(f"Вот информация о вашей валюте в браузере: https://yandex.ru/search/?text={user_data['need_currency']}",
-    reply_markup=keyboards.main_keyboard, link_preview_options=options_1)
-
-    await state.clear()
-
-@router.callback_query(F.data == 'False_info')
-async def testing(callback: types.CallbackQuery, state:FSMContext):
-    user_data = await state.get_data()
-
-    #Блок кода, чтобы избежать проблему с командой cancel
-    if len(user_data) == 0:
-        await callback.message.delete()
-        return
-    
-    await callback.message.delete()
-    await callback.message.answer("Решили проверить работоспособность бота.🤓☝️ Похвально!",reply_markup=keyboards.main_keyboard)
-
-    await state.clear()
-
-@router.callback_query(F.data == 'Right_info')
-async def good_end(callback: types.CallbackQuery, state: FSMContext):
-    user_data = await state.get_data()
-
-    #Блок кода, чтобы избежать проблему с командой cancel
-    if len(user_data) == 0:
-        await callback.message.delete()
-        return
-    
-    await callback.message.delete()
-    await callback.message.answer("Отлично!😎", reply_markup=keyboards.main_keyboard)
-
-    await state.clear()
-
-@router.callback_query(F.data == 'Lie_info')
-async def bad_end(callback: types.CallbackQuery, state: FSMContext):
-    options_1 = LinkPreviewOptions(is_disabled=True)
-    user_data = await state.get_data()
-
-    #Блок кода, чтобы избежать проблему с командой cancel
-    if len(user_data) == 0:
-        await callback.message.delete()
-        return
-
-    await callback.message.delete()
-    await callback.message.answer("Хммм... Значит ошибка в программной части. Напишите дебилу-разработчику @Senior_kartofan о вашей проблеме.🛠️")
-    await callback.message.answer(f"😎Тогда вот информация о вашей валюте в браузере: https://yandex.ru/search/?text={user_data['need_currency']}",
-    reply_markup=keyboards.main_keyboard, link_preview_options=options_1)
-
-    await state.clear()
-
-@router.callback_query(F.data == 'need_currency')
-async def find_currency(callback: types.CallbackQuery,state: FSMContext):
-    await callback.message.delete()
-    await callback.message.answer("Введите интересующую валюту.\n\n"\
-    "Правило ввода: 1)❗ЖЕЛАТЕЛЬНО❗ вводить осознанно.\n\n"\
-    "2)Пример правильного ввода👍: Австралийский доллар\n\n"\
-    "Попробуйте!🔎")
-    await state.set_state(Form.need_currency)
-
-@router.message(Form.need_currency)
-async def print_currency(message: types.Message, state: FSMContext):
-
-    await state.update_data(need_currency=message.text)
-    value = parc.get_currency(f"https://yandex.ru/search/?text={message.text}+к+рублю")
-
-    if value == 'error':
-        await message.answer("Что-то пошло не так.😱 Проверьте, Вы точно осознанно написали необходимую валюту?",reply_markup=keyboards.checkingNONE_inline_kb)
-    else:
-        await message.answer(value)
-        await message.answer("Результат соответствует ожиданиям?",reply_markup=keyboards.checking_inline_kb)
-
 ############## Мировые Валюты################# 
 
-@router.callback_query(F.data == "world_currency")
-async def world_currency(callback: types.CallbackQuery):
-    await callback.message.delete()
+@router.message(Command('currency'))
+@router.message(F.text == 'Курс валют(ЦБ РФ)🏛️')
+async def world_currency(message: types.Message):
     info_world_currency = parc.get_all_currency()
     for item in info_world_currency:
         '''
@@ -153,8 +65,8 @@ async def world_currency(callback: types.CallbackQuery):
         currency_value = item[4]
         
 
-        await callback.message.answer(f"💵{currency_nums} {сurrency_codename} ({currency_name}) - {currency_value}₽",
-        reply_markup=keyboards.main_keyboard)
+        await message.answer(f"💵{currency_nums} {сurrency_codename} (<b>{currency_name}</b>) — <u><b>{currency_value}₽</b></u>",
+        reply_markup=keyboards.main_keyboard,parse_mode="HTML")
 
 
 #################################################################
@@ -268,8 +180,8 @@ async def get_info(message : types.Message):
 
 @router.message(F.text == "Версии бота🤖")
 async def versions(message: types.Message):
-    await message.answer("Версия бота - <u><b>0.1version</b></u> (Дата выхода: 12.07.2024  20:46)",reply_markup=keyboards.main_keyboard,parse_mode="HTML")
+    await message.answer("Версия бота - <u><b>0.1.1version</b></u> (Дата выхода: 12.08.2024  18:19)\n\nВерсия бота - <u><b>0.1version</b></u> (Дата выхода: 12.07.2024  20:46)",reply_markup=keyboards.main_keyboard,parse_mode="HTML")
 
 #################################################################
 
-#0.1 version
+#0.1.1 version

@@ -15,16 +15,6 @@ headers = {
 
 ######################################################
 
-def get_currency(url : str) -> str:
-    need_class = 'ConverterInfo-Rate'
-    page = requests.get(url,headers=headers)
-
-    html_page = BS(page.content, features='lxml')
-    info = html_page.find(class_=need_class)
-    if info is None:
-        return 'error'
-    return info.text
-
 def get_all_currency() -> list:
     
     url = 'https://cbr.ru/currency_base/daily/'
@@ -124,4 +114,4 @@ def industry() -> list:
 
 ########################################################
 
-#0.1 version
+#0.1.1 version

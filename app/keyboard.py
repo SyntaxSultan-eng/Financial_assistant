@@ -24,29 +24,10 @@ material_keyboard = ReplyKeyboardMarkup(keyboard=[
     resize_keyboard=True
 )
 #################################################
-setting_currency = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text = "Мировые валюты💲",callback_data="world_currency")],
-    [InlineKeyboardButton(text="Конкретная валюта🔎", callback_data="need_currency")],
-],
-    resize_keyboard= True,
-)
-#################################################
-checkingNONE_inline_kb = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text = "Да", callback_data="True_info"), InlineKeyboardButton(text="Нет", callback_data="False_info")]    
-],
-    resize_keyboard = True,
-)
-
-checking_inline_kb = InlineKeyboardMarkup(inline_keyboard=[
-    [InlineKeyboardButton(text = "Да", callback_data="Right_info"), InlineKeyboardButton(text="Нет", callback_data="Lie_info")]    
-],
-    resize_keyboard = True,
-)
-#################################################
 Information_kb = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text="Версии бота🤖"), KeyboardButton(text= "Главное меню↩")]
 ],
     resize_keyboard=True
 )
 
-#0.1 version
+#0.1.1 version
