@@ -114,4 +114,20 @@ def industry() -> list:
 
 ########################################################
 
-#0.1.1 version
+def crypto() -> list:
+    url = 'https://ru.tradingeconomics.com/forecast/crypto'
+    page = requests.get(url,headers=headers)
+    crypto_currency = BS(page.content,features='lxml').find("tbody")
+
+    all_crypto_names = [item.find('b').text.strip() for item in crypto_currency.find_all("td",{'class' : "datatable-item-first"})]
+    all_crypto_prices = [item.text.strip() for item in crypto_currency.find_all("td", {"class":"datatable-item","id":"p"})]
+    
+    return all_crypto_names, all_crypto_prices
+########################################################
+
+def index() -> list:
+    pass
+
+########################################################
+
+#0.1.5 version

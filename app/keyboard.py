@@ -10,6 +10,7 @@ main_keyboard = ReplyKeyboardMarkup(keyboard=[
 #################################################
 stocks_keyboard = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text = "Взлеты дня💹"), KeyboardButton(text="Падения дня📉"), KeyboardButton(text="Рынок Сырья⛏️")],
+    [KeyboardButton(text = "Криптовалюта ₿"),KeyboardButton(text = "Индексы бирж📊📈")],
     [KeyboardButton(text = "Главное меню↩")]
 ],
     resize_keyboard= True,
@@ -30,4 +31,4 @@ Information_kb = ReplyKeyboardMarkup(keyboard=[
     resize_keyboard=True
 )
 
-#0.1.1 version
+#0.1.5 version

@@ -168,8 +168,27 @@ async def get_industry(message: types.Message):
             f"->\n\nТекущая цена - <u><b>{price}$</b></u>", parse_mode="HTML")
     await message.answer(f"Вот <u><b>6</b></u> позиций цен на сырьё в <u>сфере промышленности</u> на момент времени {current_time}.\n\nВсе цены представлены в долларах$$$",
         reply_markup=keyboards.material_keyboard,parse_mode="HTML")
+
+################## Крипта ########################################
+
+@router.message(F.text == "Криптовалюта ₿")
+async def give_crypto(message: types.Message):
+    names_crypto,prices_crypto = parc.crypto()
+    current_time = datetime.datetime.now().strftime("%H:%M:%S")
     
-#################################################################
+    for index in range(5):
+        await message.answer(f"Цена <u><b>{names_crypto[index]}</b></u> на рынке равна — <u><b>{prices_crypto[index]} $</b></u>",parse_mode="HTML")
+
+    await message.answer(f"Вот <u><b>5</b></u> позиций цен на криптовалюту на момент времени {current_time}.",
+        reply_markup=keyboards.stocks_keyboard,parse_mode="HTML")
+
+################## Индексы ######################################
+
+@router.message(F.text == "Индексы бирж📊📈")
+async def give_index(message: types.Message):
+    await message.answer("🚧Данная функция на стадии разработки ⚠️⚠️⚠️",reply_markup=keyboards.stocks_keyboard)
+
+##########################################################
 
 ################# Информация📜 ################################
 
@@ -180,8 +199,10 @@ async def get_info(message : types.Message):
 
 @router.message(F.text == "Версии бота🤖")
 async def versions(message: types.Message):
-    await message.answer("Версия бота - <u><b>0.1.1version</b></u> (Дата выхода: 12.08.2024  18:19)\n\nВерсия бота - <u><b>0.1version</b></u> (Дата выхода: 12.07.2024  20:46)",reply_markup=keyboards.main_keyboard,parse_mode="HTML")
+    await message.answer("Версия бота - <u><b>0.1.5version</b></u> (Дата выхода: 12.08.2024  19:32)\n\n"
+    "Версия бота - <u><b>0.1.1version</b></u> (Дата выхода: 12.08.2024  18:19)\n\n"
+    "Версия бота - <u><b>0.1version</b></u> (Дата выхода: 12.07.2024  20:46)",reply_markup=keyboards.main_keyboard,parse_mode="HTML")
 
 #################################################################
 
-#0.1.1 version
+#0.1.5 version
