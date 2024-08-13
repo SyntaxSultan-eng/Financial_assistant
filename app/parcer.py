@@ -12,6 +12,8 @@ headers = {
 #https://ru.tradingeconomics.com/commodities - сырье
 #https://cbr.ru/currency_base/daily/ - валюта
 #https://ru.tradingview.com/markets/stocks-russia/market-movers-gainers/ - акции
+#https://ru.tradingeconomics.com/forecast/crypto - крипта
+#https://ru.tradingeconomics.com/stocks -индексы
 
 ######################################################
 
@@ -126,8 +128,42 @@ def crypto() -> list:
 ########################################################
 
 def index() -> list:
-    pass
+    url = "https://ru.tradingeconomics.com/stocks"
+    page = requests.get(url,headers=headers)
+    html_page = BS(page.content,features="lxml")
+
+    return html_page.find_all("tbody")
+
+def index_europe() -> list:
+    europe_indices = index()[1]
+
+    index_names = [item.find('b').text.strip() for item in europe_indices.find_all("td", {'class' : "datatable-item-first"})]
+    index_prices = [item.text.strip() for item in europe_indices.find_all("td", {'class' : "datatable-item", "id" : 'p'})]
+    index_change_day = [item.text.strip() for item in europe_indices.find_all("td", {'class' : "datatable-item", "id" : 'nch'})]
+    index_change_day_percent = [item.text.strip() for item in europe_indices.find_all("td", {'class' : "datatable-item", "id" : 'pch'})]
+
+    return index_names,index_prices,index_change_day,index_change_day_percent
+
+def index_USA() -> list:
+    usa_indices = index()[2]
+
+    index_names = [item.find('b').text.strip() for item in usa_indices.find_all("td", {'class' : "datatable-item-first"})]
+    index_prices = [item.text.strip() for item in usa_indices.find_all("td", {'class' : "datatable-item", "id" : 'p'})]
+    index_change_day = [item.text.strip() for item in usa_indices.find_all("td", {'class' : "datatable-item", "id" : 'nch'})]
+    index_change_day_percent = [item.text.strip() for item in usa_indices.find_all("td", {'class' : "datatable-item", "id" : 'pch'})]
+
+    return index_names,index_prices,index_change_day,index_change_day_percent
+
+def index_Asia() -> list:
+    asia_indices = index()[3]
+
+    index_names = [item.find('b').text.strip() for item in asia_indices.find_all("td", {'class' : "datatable-item-first"})]
+    index_prices = [item.text.strip() for item in asia_indices.find_all("td", {'class' : "datatable-item", "id" : 'p'})]
+    index_change_day = [item.text.strip() for item in asia_indices.find_all("td", {'class' : "datatable-item", "id" : 'nch'})]
+    index_change_day_percent = [item.text.strip() for item in asia_indices.find_all("td", {'class' : "datatable-item", "id" : 'pch'})]
+
+    return index_names,index_prices,index_change_day,index_change_day_percent
 
 ########################################################
 
-#0.1.5 version
+#0.2 version

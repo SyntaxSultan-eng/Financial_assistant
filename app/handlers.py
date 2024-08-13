@@ -186,7 +186,45 @@ async def give_crypto(message: types.Message):
 
 @router.message(F.text == "Индексы бирж📊📈")
 async def give_index(message: types.Message):
-    await message.answer("🚧Данная функция на стадии разработки ⚠️⚠️⚠️",reply_markup=keyboards.stocks_keyboard)
+    await message.answer("Выберите регион🌎",reply_markup=keyboards.indices_keyboard)
+
+@router.callback_query(F.data == "EU")    
+async def indices_europe(callback: types.CallbackQuery):
+    await callback.message.delete()
+    current_time = datetime.datetime.now().strftime("%H:%M:%S")
+
+    europe_names_index, europe_prices_index, europe_change_index, europe_change_percent = parc.index_europe()
+    countries = ["Великобритания", "Германия","Франция","Италия","Испания","Россия","Нидерланды", "Турция","Швейцария", "Швеция"]
+
+    for counter in range(10):
+        await callback.message.answer(f'Биржа <u>{europe_names_index[counter]}</u>({countries[counter]}) изменилась за день на <u><b>{europe_change_index[counter]}</b></u> пункта (<b>{europe_change_percent[counter]}</b>).\n\n'
+        f"Стоимость индекса — <u><b>{europe_prices_index[counter]}</b></u> пунктов.",parse_mode="HTML")
+    await callback.message.answer(f"✨Вот <u><b>10</b></u> позиций цен на индексы бирж стран Европы на момент времени {current_time}.",parse_mode="HTML",reply_markup=keyboards.stocks_keyboard)
+
+@router.callback_query(F.data == "USA")
+async def indices_USA(callback: types.CallbackQuery):
+    await callback.message.delete()
+    current_time = datetime.datetime.now().strftime("%H:%M:%S")
+
+    usa_names_index, usa_prices_index, usa_change_index, usa_change_percent = parc.index_USA()
+
+    for counter in range(3):
+        await callback.message.answer(f'Биржа <u>{usa_names_index[counter]}</u> изменилась за день на <u><b>{usa_change_index[counter]}</b></u> пункта (<b>{usa_change_percent[counter]}</b>).\n\n'
+        f"Стоимость индекса — <u><b>{usa_prices_index[counter]}</b></u> пунктов.",parse_mode="HTML")
+    await callback.message.answer(f"✨Вот <u><b>3</b></u> позиций цен на индексы бирж США на момент времени {current_time}.",parse_mode="HTML",reply_markup=keyboards.stocks_keyboard)
+
+@router.callback_query(F.data == "Asia")
+async def indices_Asia(callback: types.CallbackQuery):
+    await callback.message.delete()
+    current_time = datetime.datetime.now().strftime("%H:%M:%S")
+
+    asia_names_index, asia_prices_index, asia_change_index, asia_change_percent = parc.index_Asia()
+    countries = ["Япония", "Китай","Китай","Китай","Китай","Индия","Бангладеш", "Сингапур"]
+
+    for counter in range(8):
+        await callback.message.answer(f'Биржа <u>{asia_names_index[counter]}</u>({countries[counter]}) изменилась за день на <u><b>{asia_change_index[counter]}</b></u> пункта (<b>{asia_change_percent[counter]}</b>).\n\n'
+        f"Стоимость индекса — <u><b>{asia_prices_index[counter]}</b></u> пунктов.",parse_mode="HTML")
+    await callback.message.answer(f"✨Вот <u><b>8</b></u> позиций цен на индексы бирж стран Азии на момент времени {current_time}.",parse_mode="HTML",reply_markup=keyboards.stocks_keyboard)
 
 ##########################################################
 
@@ -199,10 +237,11 @@ async def get_info(message : types.Message):
 
 @router.message(F.text == "Версии бота🤖")
 async def versions(message: types.Message):
-    await message.answer("Версия бота - <u><b>0.1.5version</b></u> (Дата выхода: 12.08.2024  19:32)\n\n"
+    await message.answer("Версия бота - <u><b>0.2version</b></u> (Дата выхода: 13.08.2024  20:09)\n\n"
+    "Версия бота - <u><b>0.1.5version</b></u> (Дата выхода: 12.08.2024  19:32)\n\n"
     "Версия бота - <u><b>0.1.1version</b></u> (Дата выхода: 12.08.2024  18:19)\n\n"
     "Версия бота - <u><b>0.1version</b></u> (Дата выхода: 12.07.2024  20:46)",reply_markup=keyboards.main_keyboard,parse_mode="HTML")
 
 #################################################################
 
-#0.1.5 version
+#0.2 version

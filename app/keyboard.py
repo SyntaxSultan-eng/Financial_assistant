@@ -16,6 +16,11 @@ stocks_keyboard = ReplyKeyboardMarkup(keyboard=[
     resize_keyboard= True,
     input_field_placeholder='Выберите режим',
 )
+indices_keyboard = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text="Европа",callback_data="EU")],
+    [InlineKeyboardButton(text="США", callback_data="USA")],
+    [InlineKeyboardButton(text = "Азия", callback_data="Asia")]
+])
 #################################################
 material_keyboard = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text="Энергетика⚡"), KeyboardButton(text="Металлы🔩")],
@@ -31,4 +36,4 @@ Information_kb = ReplyKeyboardMarkup(keyboard=[
     resize_keyboard=True
 )
 
-#0.1.5 version
+#0.2 version
