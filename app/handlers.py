@@ -3,6 +3,7 @@ from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State, default_state
 from aiogram.types import LinkPreviewOptions
+from decouple import config
 
 import app.keyboard as keyboards
 import app.parcer as parc
@@ -21,9 +22,11 @@ class Form(StatesGroup):
 @router.message(Command('start'))
 async def start_menu(message: types.Message):
     await message.answer(f'Здравствуйте, {message.from_user.first_name}!\n'
-        f'Этот бот должен упростить мониторинг финансовых изменений на рынке валют.\nОриентируйтесь по кнопкам!',
+        f'Этот бот должен упростить мониторинг финансовых изменений на рынке валют и не только.\nОриентируйтесь по кнопкам!',
         reply_markup=keyboards.main_keyboard
     )
+    if message.from_user.id == int(config("Admin_ID")):
+        await message.answer("Вы вошли как администратор👑",reply_markup=keyboards.main_admin_keyboard)
 
 @router.message(Command("stocks"))
 @router.message(F.text == 'Рынок акций🌐')
@@ -34,6 +37,8 @@ async def Market_stocks(message: types.Message):
 @router.message(F.text == "Главное меню↩")
 async def return_menu(message: types.Message):
     await message.answer("Возвращаю Вас на главное меню👨🏻‍💻", reply_markup=keyboards.main_keyboard)
+    if message.from_user.id == int(config("Admin_ID")):
+        await message.answer("Вы вошли как администратор👑",reply_markup=keyboards.main_admin_keyboard)
 
 @router.message(Command('cancel'))
 async def choose_cancel(message: types.Message, state: FSMContext):
@@ -54,19 +59,26 @@ async def choose_cancel(message: types.Message, state: FSMContext):
 @router.message(F.text == 'Курс валют(ЦБ РФ)🏛️')
 async def world_currency(message: types.Message):
     info_world_currency = parc.get_all_currency()
-    for item in info_world_currency:
-        '''
-        структура info_world_currency
-        [['840', 'USD', '1', 'Доллар США', '87,9595'],...]
-        '''
-        сurrency_codename = item[1]
-        currency_nums = item[2]
-        currency_name = item[3]
-        currency_value = item[4]
-        
+    if info_world_currency == "error_status":
+        await message.answer("Извините, но данная функция на ремонте🔧",reply_markup=keyboards.main_keyboard)
+        if message.from_user.id == int(config("Admin_ID")):
+            await message.answer("Необходим ремонт🛠️",reply_markup=keyboards.main_admin_keyboard)
+    else:
+        for item in info_world_currency:
+            '''
+            структура info_world_currency
+            [['840', 'USD', '1', 'Доллар США', '87,9595'],...]
+            '''
+            сurrency_codename = item[1]
+            currency_nums = item[2]
+            currency_name = item[3]
+            currency_value = item[4]
+            
 
-        await message.answer(f"💵{currency_nums} {сurrency_codename} (<b>{currency_name}</b>) — <u><b>{currency_value}₽</b></u>",
-        reply_markup=keyboards.main_keyboard,parse_mode="HTML")
+            await message.answer(f"💵{currency_nums} {сurrency_codename} (<b>{currency_name}</b>) — <u><b>{currency_value}₽</b></u>",
+            reply_markup=keyboards.main_keyboard,parse_mode="HTML")
+        if message.from_user.id == int(config("Admin_ID")):
+            await message.answer("Вы вошли как администратор👑",reply_markup=keyboards.main_admin_keyboard)
 
 
 #################################################################
@@ -78,32 +90,38 @@ async def give_up_stocks(message: types.Message):
     info_stocks = parc.growth_stocks()
     current_time = datetime.datetime.now().strftime("%H:%M:%S")
 
-    for stock in info_stocks:
-        Code_name = stock[0][:4]
-        Full_name = stock[0][4:]
-        Change_percent = stock[1]
-        Price = stock[2]
-        Subject = stock[10]
-        await message.answer(f'(<b>{Code_name}</b>) {Full_name} ({Subject}) -> \n\n'
-        f'Изменения за день на <u><b>{Change_percent}</b></u>↗ -> \n\n<u>Текущая цена <b>{Price}</b></u>', parse_mode="HTML")
+    if info_stocks == "error_status":
+        await message.answer("Извините, но данная функция на ремонте🔧",reply_markup=keyboards.stocks_keyboard)
+    else:
+        for stock in info_stocks:
+            Code_name = stock[0][:4]
+            Full_name = stock[0][4:]
+            Change_percent = stock[1]
+            Price = stock[2]
+            Subject = stock[10]
+            await message.answer(f'(<b>{Code_name}</b>) {Full_name} ({Subject}) -> \n\n'
+            f'Изменения за день на <u><b>{Change_percent}</b></u>↗ -> \n\n<u>Текущая цена <b>{Price}</b></u>', parse_mode="HTML")
 
-    await message.answer(f"😎Вот первые <u><b>10</b></u> позиций в лидерах роста на момент времени {current_time}",reply_markup=keyboards.stocks_keyboard,parse_mode="HTML")
+        await message.answer(f"😎Вот первые <u><b>10</b></u> позиций в лидерах роста на момент времени {current_time}",reply_markup=keyboards.stocks_keyboard,parse_mode="HTML")
 
 @router.message(F.text == 'Падения дня📉')
 async def give_down_stocks(message: types.Message):
     inf_stock = parc.drop_stocks()
     current_time = datetime.datetime.now().strftime("%H:%M:%S")
 
-    for stock in inf_stock:
-        Code_name = stock[0][:4]
-        Full_name = stock[0][4:]
-        Change_percent = stock[1]
-        Price = stock[2]
-        Subject = stock[10]
-        await message.answer(f'(<b>{Code_name}</b>) {Full_name} ({Subject}) -> \n\n'
-        f'Изменения за день на <u><b>{Change_percent}</b></u>⬇ -> \n\n<u>Текущая цена <b>{Price}</b></u>', parse_mode="HTML")
+    if inf_stock == "error_status":
+        await message.answer("Извините, но данная функция на ремонте🔧",reply_markup=keyboards.stocks_keyboard)
+    else:
+        for stock in inf_stock:
+            Code_name = stock[0][:4]
+            Full_name = stock[0][4:]
+            Change_percent = stock[1]
+            Price = stock[2]
+            Subject = stock[10]
+            await message.answer(f'(<b>{Code_name}</b>) {Full_name} ({Subject}) -> \n\n'
+            f'Изменения за день на <u><b>{Change_percent}</b></u>⬇ -> \n\n<u>Текущая цена <b>{Price}</b></u>', parse_mode="HTML")
 
-    await message.answer(f"😒Вот первые <u><b>10</b></u> позиций в лидерах падения〽 на момент времени {current_time}",reply_markup=keyboards.stocks_keyboard,parse_mode="HTML")
+        await message.answer(f"😒Вот первые <u><b>10</b></u> позиций в лидерах падения〽 на момент времени {current_time}",reply_markup=keyboards.stocks_keyboard,parse_mode="HTML")
 
 
 ################## Сырье ########################################
@@ -118,56 +136,68 @@ async def get_energy(message: types.Message):
     energy_data = parc.energy()
     current_time = datetime.datetime.now().strftime("%H:%M:%S")
 
-    for info_list in energy_data:
-        name = info_list[0]
-        price,change_day,percent = info_list[1]
+    if energy_data == "error_status":
+        await message.answer("Извините, но данная функция на ремонте🔧",reply_markup=keyboards.stocks_keyboard)
+    else:
+        for info_list in energy_data:
+            name = info_list[0]
+            price,change_day,percent = info_list[1]
 
-        await message.answer(f"Цена на <u>{name.capitalize()}</u> за день <u>изменилась</u> на <b>{change_day}$</b> (<u><b>{percent}</b></u>)."
-            f"->\n\nТекущая цена - <u><b>{price}$</b></u>", parse_mode="HTML")
-    await message.answer(f"Вот <u><b>6</b></u> позиций цен на сырьё в <u>сфере энергетики</u> на момент времени {current_time}.\n\nВсе цены представлены в долларах$$$",
-        reply_markup=keyboards.material_keyboard,parse_mode="HTML")
+            await message.answer(f"Цена на <u>{name.capitalize()}</u> за день <u>изменилась</u> на <b>{change_day}$</b> (<u><b>{percent}</b></u>)."
+                f"->\n\nТекущая цена - <u><b>{price}$</b></u>", parse_mode="HTML")
+        await message.answer(f"Вот <u><b>6</b></u> позиций цен на сырьё в <u>сфере энергетики</u> на момент времени {current_time}.\n\nВсе цены представлены в долларах$$$",
+            reply_markup=keyboards.material_keyboard,parse_mode="HTML")
 
 @router.message(F.text == "Металлы🔩")
 async def get_metall(message: types.Message):
     metall_data = parc.metall()
     current_time = datetime.datetime.now().strftime("%H:%M:%S")
     
-    for info_list in metall_data:
-        name = info_list[0]
-        price,change_day,percent = info_list[1]
+    if metall_data == "error_status":
+        await message.answer("Извините, но данная функция на ремонте🔧",reply_markup=keyboards.stocks_keyboard)
+    else:
+        for info_list in metall_data:
+            name = info_list[0]
+            price,change_day,percent = info_list[1]
 
-        await message.answer(f"Цена на <u>{name.capitalize()}</u> за день <u>изменилась</u> на <b>{change_day}$</b> (<u><b>{percent}</b></u>)."
-            f"->\n\nТекущая цена - <u><b>{price}$</b></u>", parse_mode="HTML")
-    await message.answer(f"Вот <u><b>5</b></u> позиций цен на сырьё в <u>сфере металлов</u> на момент времени {current_time}.\n\nВсе цены представлены в долларах$$$",
-        reply_markup=keyboards.material_keyboard,parse_mode="HTML")
+            await message.answer(f"Цена на <u>{name.capitalize()}</u> за день <u>изменилась</u> на <b>{change_day}$</b> (<u><b>{percent}</b></u>)."
+                f"->\n\nТекущая цена - <u><b>{price}$</b></u>", parse_mode="HTML")
+        await message.answer(f"Вот <u><b>5</b></u> позиций цен на сырьё в <u>сфере металлов</u> на момент времени {current_time}.\n\nВсе цены представлены в долларах$$$",
+            reply_markup=keyboards.material_keyboard,parse_mode="HTML")
 
 @router.message(F.text == "Сельское хоз. 🌱")
 async def get_agriculture(message: types.Message):
     agriculture_data = parc.agriculture()
     current_time = datetime.datetime.now().strftime("%H:%M:%S")
     
-    for info_list in agriculture_data:
-        name = info_list[0]
-        price,change_day,percent = info_list[1]
+    if agriculture_data == "error_status":
+        await message.answer("Извините, но данная функция на ремонте🔧",reply_markup=keyboards.stocks_keyboard)
+    else:
+        for info_list in agriculture_data:
+            name = info_list[0]
+            price,change_day,percent = info_list[1]
 
-        await message.answer(f"Цена на <u>{name.capitalize()}</u> за день <u>изменилась</u> на <b>{change_day}$</b> (<u><b>{percent}</b></u>)."
-            f"->\n\nТекущая цена - <u><b>{price}$</b></u>", parse_mode="HTML")
-    await message.answer(f"Вот <u><b>6</b></u> позиций цен на сырьё в <u>сфере сельского хозяйства</u> на момент времени {current_time}.\n\nВсе цены представлены в долларах$$$",
-        reply_markup=keyboards.material_keyboard,parse_mode="HTML")
+            await message.answer(f"Цена на <u>{name.capitalize()}</u> за день <u>изменилась</u> на <b>{change_day}$</b> (<u><b>{percent}</b></u>)."
+                f"->\n\nТекущая цена - <u><b>{price}$</b></u>", parse_mode="HTML")
+        await message.answer(f"Вот <u><b>6</b></u> позиций цен на сырьё в <u>сфере сельского хозяйства</u> на момент времени {current_time}.\n\nВсе цены представлены в долларах$$$",
+            reply_markup=keyboards.material_keyboard,parse_mode="HTML")
 
 @router.message(F.text == "Промышленность⚙️")
 async def get_industry(message: types.Message):
     industry_data = parc.industry()
     current_time = datetime.datetime.now().strftime("%H:%M:%S")
-    
-    for info_list in industry_data:
-        name = info_list[0]
-        price,change_day,percent = info_list[1]
 
-        await message.answer(f"Цена на <u>{name.capitalize()}</u> за день <u>изменилась</u> на <b>{change_day}$</b> (<u><b>{percent}</b></u>)."
-            f"->\n\nТекущая цена - <u><b>{price}$</b></u>", parse_mode="HTML")
-    await message.answer(f"Вот <u><b>6</b></u> позиций цен на сырьё в <u>сфере промышленности</u> на момент времени {current_time}.\n\nВсе цены представлены в долларах$$$",
-        reply_markup=keyboards.material_keyboard,parse_mode="HTML")
+    if industry_data == "error_status":
+        await message.answer("Извините, но данная функция на ремонте🔧",reply_markup=keyboards.stocks_keyboard)
+    else:
+        for info_list in industry_data:
+            name = info_list[0]
+            price,change_day,percent = info_list[1]
+
+            await message.answer(f"Цена на <u>{name.capitalize()}</u> за день <u>изменилась</u> на <b>{change_day}$</b> (<u><b>{percent}</b></u>)."
+                f"->\n\nТекущая цена - <u><b>{price}$</b></u>", parse_mode="HTML")
+        await message.answer(f"Вот <u><b>6</b></u> позиций цен на сырьё в <u>сфере промышленности</u> на момент времени {current_time}.\n\nВсе цены представлены в долларах$$$",
+            reply_markup=keyboards.material_keyboard,parse_mode="HTML")
 
 ################## Крипта ########################################
 
@@ -176,11 +206,14 @@ async def give_crypto(message: types.Message):
     names_crypto,prices_crypto = parc.crypto()
     current_time = datetime.datetime.now().strftime("%H:%M:%S")
     
-    for index in range(5):
-        await message.answer(f"Цена <u><b>{names_crypto[index]}</b></u> на рынке равна — <u><b>{prices_crypto[index]} $</b></u>",parse_mode="HTML")
+    if names_crypto == "error_status1":
+        await message.answer("Извините, но данная функция на ремонте🔧",reply_markup=keyboards.stocks_keyboard)
+    else:
+        for index in range(5):
+            await message.answer(f"Цена <u><b>{names_crypto[index]}</b></u> на рынке равна — <u><b>{prices_crypto[index]} $</b></u>",parse_mode="HTML")
 
-    await message.answer(f"Вот <u><b>5</b></u> позиций цен на криптовалюту на момент времени {current_time}.",
-        reply_markup=keyboards.stocks_keyboard,parse_mode="HTML")
+        await message.answer(f"Вот <u><b>5</b></u> позиций цен на криптовалюту на момент времени {current_time}.",
+            reply_markup=keyboards.stocks_keyboard,parse_mode="HTML")
 
 ################## Индексы ######################################
 
@@ -196,10 +229,13 @@ async def indices_europe(callback: types.CallbackQuery):
     europe_names_index, europe_prices_index, europe_change_index, europe_change_percent = parc.index_europe()
     countries = ["Великобритания", "Германия","Франция","Италия","Испания","Россия","Нидерланды", "Турция","Швейцария", "Швеция"]
 
-    for counter in range(10):
-        await callback.message.answer(f'Биржа <u>{europe_names_index[counter]}</u>({countries[counter]}) изменилась за день на <u><b>{europe_change_index[counter]}</b></u> пункта (<b>{europe_change_percent[counter]}</b>).\n\n'
-        f"Стоимость индекса — <u><b>{europe_prices_index[counter]}</b></u> пунктов.",parse_mode="HTML")
-    await callback.message.answer(f"✨Вот <u><b>10</b></u> позиций цен на индексы бирж стран Европы на момент времени {current_time}.",parse_mode="HTML",reply_markup=keyboards.stocks_keyboard)
+    if europe_names_index == "error_status1":
+        await callback.message.answer("Извините, но данная функция на ремонте🔧",reply_markup=keyboards.stocks_keyboard)
+    else:
+        for counter in range(10):
+            await callback.message.answer(f'Биржа <u>{europe_names_index[counter]}</u>({countries[counter]}) изменилась за день на <u><b>{europe_change_index[counter]}</b></u> пункта (<b>{europe_change_percent[counter]}</b>).\n\n'
+            f"Стоимость индекса — <u><b>{europe_prices_index[counter]}</b></u> пунктов.",parse_mode="HTML")
+        await callback.message.answer(f"✨Вот <u><b>10</b></u> позиций цен на индексы бирж стран Европы на момент времени {current_time}.",parse_mode="HTML",reply_markup=keyboards.stocks_keyboard)
 
 @router.callback_query(F.data == "USA")
 async def indices_USA(callback: types.CallbackQuery):
@@ -208,10 +244,13 @@ async def indices_USA(callback: types.CallbackQuery):
 
     usa_names_index, usa_prices_index, usa_change_index, usa_change_percent = parc.index_USA()
 
-    for counter in range(3):
-        await callback.message.answer(f'Биржа <u>{usa_names_index[counter]}</u> изменилась за день на <u><b>{usa_change_index[counter]}</b></u> пункта (<b>{usa_change_percent[counter]}</b>).\n\n'
-        f"Стоимость индекса — <u><b>{usa_prices_index[counter]}</b></u> пунктов.",parse_mode="HTML")
-    await callback.message.answer(f"✨Вот <u><b>3</b></u> позиций цен на индексы бирж США на момент времени {current_time}.",parse_mode="HTML",reply_markup=keyboards.stocks_keyboard)
+    if usa_names_index == "error_status1":
+        await callback.message.answer("Извините, но данная функция на ремонте🔧",reply_markup=keyboards.stocks_keyboard)
+    else:
+        for counter in range(3):
+            await callback.message.answer(f'Биржа <u>{usa_names_index[counter]}</u> изменилась за день на <u><b>{usa_change_index[counter]}</b></u> пункта (<b>{usa_change_percent[counter]}</b>).\n\n'
+            f"Стоимость индекса — <u><b>{usa_prices_index[counter]}</b></u> пунктов.",parse_mode="HTML")
+        await callback.message.answer(f"✨Вот <u><b>3</b></u> позиций цен на индексы бирж США на момент времени {current_time}.",parse_mode="HTML",reply_markup=keyboards.stocks_keyboard)
 
 @router.callback_query(F.data == "Asia")
 async def indices_Asia(callback: types.CallbackQuery):
@@ -221,10 +260,13 @@ async def indices_Asia(callback: types.CallbackQuery):
     asia_names_index, asia_prices_index, asia_change_index, asia_change_percent = parc.index_Asia()
     countries = ["Япония", "Китай","Китай","Китай","Китай","Индия","Бангладеш", "Сингапур"]
 
-    for counter in range(8):
-        await callback.message.answer(f'Биржа <u>{asia_names_index[counter]}</u>({countries[counter]}) изменилась за день на <u><b>{asia_change_index[counter]}</b></u> пункта (<b>{asia_change_percent[counter]}</b>).\n\n'
-        f"Стоимость индекса — <u><b>{asia_prices_index[counter]}</b></u> пунктов.",parse_mode="HTML")
-    await callback.message.answer(f"✨Вот <u><b>8</b></u> позиций цен на индексы бирж стран Азии на момент времени {current_time}.",parse_mode="HTML",reply_markup=keyboards.stocks_keyboard)
+    if asia_names_index == "error_status1":
+        await callback.message.answer("Извините, но данная функция на ремонте🔧",reply_markup=keyboards.stocks_keyboard)
+    else:
+        for counter in range(8):
+            await callback.message.answer(f'Биржа <u>{asia_names_index[counter]}</u>({countries[counter]}) изменилась за день на <u><b>{asia_change_index[counter]}</b></u> пункта (<b>{asia_change_percent[counter]}</b>).\n\n'
+            f"Стоимость индекса — <u><b>{asia_prices_index[counter]}</b></u> пунктов.",parse_mode="HTML")
+        await callback.message.answer(f"✨Вот <u><b>8</b></u> позиций цен на индексы бирж стран Азии на момент времени {current_time}.",parse_mode="HTML",reply_markup=keyboards.stocks_keyboard)
 
 ##########################################################
 
@@ -237,11 +279,36 @@ async def get_info(message : types.Message):
 
 @router.message(F.text == "Версии бота🤖")
 async def versions(message: types.Message):
-    await message.answer("Версия бота - <u><b>0.2version</b></u> (Дата выхода: 13.08.2024  20:09)\n\n"
+    await message.answer("Версия бота - <u><b>0.3version</b></u> (Дата выхода: 13.08.2024  20:09)\n\n"
+    "Версия бота - <u><b>0.2version</b></u> (Дата выхода: 13.08.2024  20:09)\n\n"
     "Версия бота - <u><b>0.1.5version</b></u> (Дата выхода: 12.08.2024  19:32)\n\n"
     "Версия бота - <u><b>0.1.1version</b></u> (Дата выхода: 12.08.2024  18:19)\n\n"
-    "Версия бота - <u><b>0.1version</b></u> (Дата выхода: 12.07.2024  20:46)",reply_markup=keyboards.main_keyboard,parse_mode="HTML")
+    "Версия бота - <u><b>0.1version</b></u> (Дата выхода: 12.07.2024  20:46)",reply_markup=keyboards.Information_kb,parse_mode="HTML")
 
+###################### Панель админа👑 ###################################
+
+@router.message(F.text == "Панель админа👑")
+async def admin(message: types.Message):
+    if message.from_user.id == int(config("Admin_ID")):
+        await message.answer("Пункт управления🕹️",reply_markup=keyboards.admin_panel)
+
+@router.message(F.text == "Состояние команд📋")
+async def check_admin_command(message: types.Message):
+    if message.from_user.id == int(config("Admin_ID")):
+        status = parc.admin_info()
+        work_or_not = ["Не Работает❗","Работает✔️"]
+        all_function = ["Курс валют(ЦБ РФ)🏛️",'Взлеты дня💹',"Падения дня📉","Рынок Сырья⛏️","Криптовалюта ₿","Индексы бирж📊📈"]
+        answer = ''
+
+        for item in range(len(status)):
+            answer += f'{all_function[item]} — {work_or_not[int(status[item])]}\n\n'
+    await message.answer(answer,reply_markup=keyboards.admin_panel)
+
+@router.message(F.text == "Отключить/Включить функцию")
+async def admin_root(message: types.Message):
+    if message.from_user.id == int(config("Admin_ID")):
+        pass
+    
 #################################################################
 
-#0.2 version
+#0.3 version

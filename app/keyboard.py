@@ -7,6 +7,13 @@ main_keyboard = ReplyKeyboardMarkup(keyboard=[
     resize_keyboard= True,
     input_field_placeholder='Выберите режим',
 )
+main_admin_keyboard = ReplyKeyboardMarkup(keyboard=[
+    [KeyboardButton(text = 'Курс валют(ЦБ РФ)🏛️'),KeyboardButton(text = 'Рынок акций🌐')],
+    [KeyboardButton(text = "Информация📜"), KeyboardButton(text = "Панель админа👑")]
+], 
+    resize_keyboard= True,
+    input_field_placeholder='Выберите режим',
+)
 #################################################
 stocks_keyboard = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text = "Взлеты дня💹"), KeyboardButton(text="Падения дня📉"), KeyboardButton(text="Рынок Сырья⛏️")],
@@ -35,5 +42,16 @@ Information_kb = ReplyKeyboardMarkup(keyboard=[
 ],
     resize_keyboard=True
 )
+#################################################
+admin_panel = ReplyKeyboardMarkup(keyboard=[
+    [KeyboardButton(text="Состояние команд📋"), KeyboardButton(text="Отключить/Включить функцию")],
+    [KeyboardButton(text="Главное меню↩")]
 
-#0.2 version
+],
+    resize_keyboard=True
+)
+
+
+
+
+#0.3 version

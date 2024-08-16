@@ -28,4 +28,4 @@ if __name__ == '__main__':
     except KeyboardInterrupt:
         print('Bot has stopped working❌')
 
-#0.2 version
+#0.3 version
