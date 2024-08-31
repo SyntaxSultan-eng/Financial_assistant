@@ -1,3 +1,4 @@
 .env
 *.pyc
 ParcerTest.py
+.venv
