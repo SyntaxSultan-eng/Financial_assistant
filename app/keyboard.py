@@ -58,4 +58,4 @@ toggle_panel = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="Криптовалюта ₿",callback_data="crypto"), InlineKeyboardButton(text="Индексы бирж📊📈",callback_data='index')]
 ])
 
-#0.3.5 version
+#0.4 version

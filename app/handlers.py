@@ -317,8 +317,59 @@ async def switch_currency(callback: types.CallbackQuery):
     result = parc.admin_currency_switch()
 
     await callback.message.answer(f"Функция (Курс валют(ЦБ РФ)🏛️) изменила своё состояние на <u><b>{switch[int(result)]}</b></u>💻",
-    parse_mode="HTML",reply_markup=keyboards.main_admin_keyboard)
+    parse_mode="HTML",reply_markup=keyboards.admin_panel)
+
+@router.callback_query(F.data == 'up')
+async def switch_up_stocks(callback: types.CallbackQuery):
+    await callback.message.delete()
+
+    switch = ["OFF","ON"]
+    result = parc.admin_stocks_up_switch()
+
+    await callback.message.answer(f"Функция (Взлеты дня💹) изменила своё состояние на <u><b>{switch[int(result)]}</b></u>💻",
+    parse_mode="HTML",reply_markup=keyboards.admin_panel)
+
+@router.callback_query(F.data =="down")
+async def switch_down_stocks(callback: types.CallbackQuery):
+    await callback.message.delete()
+
+    switch = ["OFF", "ON"]
+    result = parc.admin_stocks_down_switch()
+
+    await callback.message.answer(f"Функция (Падения дня📉) изменила своё состояние на <u><b>{switch[int(result)]}</b></u>💻",
+    parse_mode="HTML",reply_markup=keyboards.admin_panel)
+
+@router.callback_query(F.data == "material")
+async def switch_material(callback: types.CallbackQuery):
+    await callback.message.delete()
+
+    switch = ["OFF","ON"]
+    result = parc.admin_material_switch()
+
+    await callback.message.answer(f"Функция (Рынок Сырья⛏️) изменила своё состояние на <u><b>{switch[int(result)]}</b></u>💻",
+    parse_mode="HTML",reply_markup=keyboards.admin_panel)
+    
+@router.callback_query(F.data == "crypto")
+async def switch_crypto(callback: types.CallbackQuery):
+    await callback.message.delete()
+
+    switch = ["OFF", "ON"]
+    result = parc.admin_crypto_switch()
+
+    await callback.message.answer(f"Функция (Криптовалюта ₿) изменила своё состояние на <u><b>{switch[int(result)]}</b></u>💻",
+    parse_mode="HTML",reply_markup=keyboards.admin_panel)
+
+@router.callback_query(F.data == "index")
+async def switch_index(callback: types.CallbackQuery):
+    await callback.message.delete()
+
+    switch = ["OFF","ON"]
+    result = parc.admin_index_switch()
+
+    await callback.message.answer(f"Функция (Индексы бирж📊📈) изменила своё состояние на <u><b>{switch[int(result)]}</b></u>💻",
+    parse_mode="HTML",reply_markup=keyboards.admin_panel)
+
 
 #################################################################
 
-#0.3.5 version
+#0.4 version

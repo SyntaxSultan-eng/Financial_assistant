@@ -271,6 +271,31 @@ def admin_currency_switch() -> bool:
     all_currency_status = not all_currency_status
     return all_currency_status
 
+def admin_stocks_up_switch() -> bool:
+    global growthstk_status
+    growthstk_status = not growthstk_status
+    return growthstk_status
+
+def admin_stocks_down_switch() -> bool:
+    global dropstk_status
+    dropstk_status = not dropstk_status
+    return dropstk_status
+
+def admin_material_switch() -> bool:
+    global all_material_status
+    all_material_status = not all_material_status
+    return all_material_status
+
+def admin_crypto_switch() -> bool:
+    global crypto_status
+    crypto_status = not crypto_status
+    return crypto_status
+
+def admin_index_switch() -> bool:
+    global index_status
+    index_status = not index_status
+    return index_status
+
 ########################################################
 
-#0.3.5 version
+#0.4 version
