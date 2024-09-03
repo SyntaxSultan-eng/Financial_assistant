@@ -266,6 +266,11 @@ def index_Asia() -> list:
 def admin_info() -> list:
     return [all_currency_status,growthstk_status,dropstk_status,all_material_status,crypto_status,index_status]
 
+def admin_currency_switch() -> bool:
+    global all_currency_status
+    all_currency_status = not all_currency_status
+    return all_currency_status
+
 ########################################################
 
-#0.3 version
+#0.3.5 version

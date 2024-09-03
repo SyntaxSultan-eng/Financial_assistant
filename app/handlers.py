@@ -307,8 +307,18 @@ async def check_admin_command(message: types.Message):
 @router.message(F.text == "Отключить/Включить функцию")
 async def admin_root(message: types.Message):
     if message.from_user.id == int(config("Admin_ID")):
-        pass
-    
+        await message.answer("Выбери функцию, которую нужно вкл/выкл.", reply_markup=keyboards.toggle_panel)
+
+@router.callback_query(F.data == "currency")
+async def switch_currency(callback: types.CallbackQuery):
+    await callback.message.delete()
+
+    switch = ["OFF", "ON"]
+    result = parc.admin_currency_switch()
+
+    await callback.message.answer(f"Функция (Курс валют(ЦБ РФ)🏛️) изменила своё состояние на <u><b>{switch[int(result)]}</b></u>💻",
+    parse_mode="HTML",reply_markup=keyboards.main_admin_keyboard)
+
 #################################################################
 
-#0.3 version
+#0.3.5 version
