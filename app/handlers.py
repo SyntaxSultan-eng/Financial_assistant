@@ -267,6 +267,29 @@ async def indices_Asia(callback: types.CallbackQuery):
             await callback.message.answer(f'Биржа <u>{asia_names_index[counter]}</u>({countries[counter]}) изменилась за день на <u><b>{asia_change_index[counter]}</b></u> пункта (<b>{asia_change_percent[counter]}</b>).\n\n'
             f"Стоимость индекса — <u><b>{asia_prices_index[counter]}</b></u> пунктов.",parse_mode="HTML")
         await callback.message.answer(f"✨Вот <u><b>8</b></u> позиций цен на индексы бирж стран Азии на момент времени {current_time}.",parse_mode="HTML",reply_markup=keyboards.stocks_keyboard)
+##########################################################
+
+################# Экономика РФ ################################
+
+@router.message(F.text == "Экономика РФ")
+async def main_menu_economy(message:types.Message):
+    current_time = datetime.datetime.now().strftime("%d-%m-%Y %H:%M")
+    await message.answer(f"Здесь Вы можете найти информацию о состоянии <b>экономики РФ</b> на момент времени: {current_time}",
+    reply_markup=keyboards.economy_Rus,parse_mode="HTML")
+
+@router.message(F.text == "Инфляция")
+async def get_inflation(message: types.Message):
+    data = parc.inflation()
+
+    await message.answer(f"Инфляция на момент времени {list(data['Инфляция'].keys())[1]} (ЦБ РФ) равна - <u><b>{data["Инфляция"][list(data['Инфляция'].keys())[1]]}</b></u>", 
+    parse_mode = "HTML")
+    await message.answer(f"Цель по инфляции ЦБ РФ равна - <u><b>{data["Инфляция"][list(data['Инфляция'].keys())[0]]}</b></u>", parse_mode="HTML")
+    await message.answer(f"Значение ключевой ставки равно - <u><b>{data["Ключевая ставка"]}</b></u>",
+    parse_mode="HTML", reply_markup=keyboards.economy_Rus)
+
+@router.message(F.text == "Безработица")
+async def unemployment(message: types.Message):
+    pass
 
 ##########################################################
 

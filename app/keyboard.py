@@ -2,14 +2,15 @@ from aiogram.types import ReplyKeyboardMarkup,KeyboardButton, InlineKeyboardButt
 
 main_keyboard = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text = 'Курс валют(ЦБ РФ)🏛️'),KeyboardButton(text = 'Рынок акций🌐')],
-    [KeyboardButton(text = "Информация📜")]
+    [KeyboardButton(text = "Информация📜"), KeyboardButton(text = "Экономика РФ")]
 ], 
     resize_keyboard= True,
     input_field_placeholder='Выберите режим',
 )
 main_admin_keyboard = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text = 'Курс валют(ЦБ РФ)🏛️'),KeyboardButton(text = 'Рынок акций🌐')],
-    [KeyboardButton(text = "Информация📜"), KeyboardButton(text = "Панель админа👑")]
+    [KeyboardButton(text = "Информация📜"), KeyboardButton(text="Экономика РФ")],
+    [KeyboardButton(text = "Панель админа👑")]
 ], 
     resize_keyboard= True,
     input_field_placeholder='Выберите режим',
@@ -36,6 +37,17 @@ material_keyboard = ReplyKeyboardMarkup(keyboard=[
 ],
     resize_keyboard=True
 )
+#################################################
+
+economy_Rus = ReplyKeyboardMarkup(keyboard=[
+    [KeyboardButton(text="Инфляция"), KeyboardButton(text="Безработица")],
+    [KeyboardButton(text = "ВВП")],
+    [KeyboardButton(text = "Индекс промышленного производства"), KeyboardButton(text = "Индекс деловой активности")],
+    [KeyboardButton(text= "Главное меню↩")]
+],
+    resize_keyboard=True
+)
+
 #################################################
 Information_kb = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text="Версии бота🤖"), KeyboardButton(text= "Главное меню↩")]

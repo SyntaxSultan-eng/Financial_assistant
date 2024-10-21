@@ -263,6 +263,23 @@ def index_Asia() -> list:
 
 ########################################################
 
+def inflation() -> dict:
+    
+    url = "https://www.cbr.ru/key-indicators/"
+
+    page = requests.get(url, headers=headers)
+    html = BS(page.content, features='lxml')
+
+    indicators_name = [item.text.strip() for item in html.find_all(class_ = "title")[:2]]
+    indicators_subname = [item.text.strip() for item in html.find_all(class_ ="denotement")[:3]]
+    indicators_value = [item.text.strip() for item in html.find_all(class_ ='value')[:3]]
+
+    indicators_dict = {indicators_name[0] : {indicators_subname[0]:indicators_value[0], indicators_subname[1]:indicators_value[1]},indicators_name[1] : indicators_value[2]}
+
+    return indicators_dict
+
+########################################################
+
 def admin_info() -> list:
     return [all_currency_status,growthstk_status,dropstk_status,all_material_status,crypto_status,index_status]
 
