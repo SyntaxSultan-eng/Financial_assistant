@@ -14,6 +14,7 @@ headers = {
 #https://ru.tradingview.com/markets/stocks-russia/market-movers-gainers/ - акции
 #https://ru.tradingeconomics.com/forecast/crypto - крипта
 #https://ru.tradingeconomics.com/stocks -индексы
+#https://rosstat.gov.ru/ - индикаторы
 
 ######################################################
 
@@ -277,6 +278,26 @@ def inflation() -> dict:
     indicators_dict = {indicators_name[0] : {indicators_subname[0]:indicators_value[0], indicators_subname[1]:indicators_value[1]},indicators_name[1] : indicators_value[2]}
 
     return indicators_dict
+
+def info_economy_rus() -> dict:
+    url = "https://rosstat.gov.ru/"
+
+    page = requests.get(url, headers=headers)
+    html_page = BS(page.content,features='lxml')
+
+    indicators_all = html_page.find_all(class_="indicators__cols")
+    indicators_info_dict = {}
+
+    for index in range(1,len(indicators_all)):
+        columns = indicators_all[index].find_all("div",{"class" :"indicators__col"})
+        info_data = []
+        for second_index in range(len(columns)):
+            str_data = columns[second_index].find("div", {"class" : "indicators__data"})
+            info_data.append(str_data.text.strip())
+        indicators_info_dict[info_data[0]] = (info_data[1],info_data[2])
+
+    return indicators_info_dict
+
 
 ########################################################
 

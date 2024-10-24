@@ -289,7 +289,44 @@ async def get_inflation(message: types.Message):
 
 @router.message(F.text == "Безработица")
 async def unemployment(message: types.Message):
-    pass
+    info_dict = parc.info_economy_rus()
+
+    keys_dict = list(info_dict.keys())
+
+    await message.answer(f"{keys_dict[-2]} - <u><b>{info_dict[keys_dict[-2]][0]+info_dict[keys_dict[-2]][1]}</b></u>",
+    parse_mode="HTML")
+    await message.answer(f"{keys_dict[0]} - равна <u><b>{info_dict[keys_dict[0]][0]+" "+info_dict[keys_dict[0]][1]}</b></u> ",
+    parse_mode="HTML")
+    await message.answer(f"{keys_dict[-1]} равна - <u><b>{info_dict[keys_dict[-1]][0]+' '+info_dict[keys_dict[-1]][1]}</b></u>",parse_mode="HTML",reply_markup=keyboards.economy_Rus)
+
+@router.message(F.text == "ВВП")
+async def VVP(message: types.Message):
+    info_dict = parc.info_economy_rus()
+
+    keys_dict = list(info_dict.keys())
+
+    await message.answer(f"{keys_dict[1]} - <u><b>{info_dict[keys_dict[1]][0]+' '+info_dict[keys_dict[1]][1]}</b></u>",
+    parse_mode="HTML")
+    await message.answer(f"{keys_dict[2]} - <u><b>{info_dict[keys_dict[2]][0]+info_dict[keys_dict[2]][1]}</b></u>",
+    parse_mode="HTML",reply_markup=keyboards.economy_Rus)
+
+@router.message(F.text == "Индекс промышленного производства")
+async def index_production(message: types.Message):
+    info_dict = parc.info_economy_rus()
+
+    keys_dict = list(info_dict.keys())
+
+    await message.answer(f"{keys_dict[3]} - <u><b>{info_dict[keys_dict[3]][0]+info_dict[keys_dict[3]][1]}</b></u>",
+    parse_mode="HTML",reply_markup=keyboards.economy_Rus)
+
+@router.message(F.text == "Индекс потребительских цен")
+async def index_price(message: types.Message):
+    info_dict = parc.info_economy_rus()
+
+    keys_dict = list(info_dict.keys())
+
+    await message.answer(f"{keys_dict[4]} - <u><b>{info_dict[keys_dict[4]][0]+info_dict[keys_dict[4]][1]}</b></u>",
+    parse_mode="HTML",reply_markup=keyboards.economy_Rus)
 
 ##########################################################
 

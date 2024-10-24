@@ -42,7 +42,7 @@ material_keyboard = ReplyKeyboardMarkup(keyboard=[
 economy_Rus = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text="Инфляция"), KeyboardButton(text="Безработица")],
     [KeyboardButton(text = "ВВП")],
-    [KeyboardButton(text = "Индекс промышленного производства"), KeyboardButton(text = "Индекс деловой активности")],
+    [KeyboardButton(text = "Индекс промышленного производства"), KeyboardButton(text = "Индекс потребительских цен")],
     [KeyboardButton(text= "Главное меню↩")]
 ],
     resize_keyboard=True
