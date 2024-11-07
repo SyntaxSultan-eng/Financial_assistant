@@ -279,54 +279,81 @@ async def main_menu_economy(message:types.Message):
 
 @router.message(F.text == "Инфляция")
 async def get_inflation(message: types.Message):
-    data = parc.inflation()
+    data, next_meeting = parc.inflation()
 
-    await message.answer(f"Инфляция на момент времени {list(data['Инфляция'].keys())[1]} (ЦБ РФ) равна - <u><b>{data["Инфляция"][list(data['Инфляция'].keys())[1]]}</b></u>", 
-    parse_mode = "HTML")
-    await message.answer(f"Цель по инфляции ЦБ РФ равна - <u><b>{data["Инфляция"][list(data['Инфляция'].keys())[0]]}</b></u>", parse_mode="HTML")
-    await message.answer(f"Значение ключевой ставки равно - <u><b>{data["Ключевая ставка"]}</b></u>",
-    parse_mode="HTML", reply_markup=keyboards.economy_Rus)
+    if data == "error_status":
+        await message.answer("Извините, но данная функция на ремонте🔧",reply_markup=keyboards.main_keyboard)
+        if message.from_user.id == int(config("Admin_ID")):
+            await message.answer("Необходим ремонт🛠️",reply_markup=keyboards.main_admin_keyboard)
+    else:
+        await message.answer(f"Инфляция на момент времени {list(data['Инфляция'].keys())[1]} (ЦБ РФ) равна - <u><b>{data["Инфляция"][list(data['Инфляция'].keys())[1]]}</b></u>", 
+        parse_mode = "HTML")
+        await message.answer(f"Цель по инфляции ЦБ РФ равна - <u><b>{data["Инфляция"][list(data['Инфляция'].keys())[0]]}</b></u>", parse_mode="HTML")
+        await message.answer(f"Значение ключевой ставки равно - <u><b>{data["Ключевая ставка"]}</b></u>",
+        parse_mode="HTML")
+        await message.answer(f"{list(next_meeting.keys())[0]} - <u><b>{next_meeting[list(next_meeting.keys())[0]]}</b></u>",
+        parse_mode="HTML", reply_markup=keyboards.economy_Rus)
 
 @router.message(F.text == "Безработица")
 async def unemployment(message: types.Message):
     info_dict = parc.info_economy_rus()
 
-    keys_dict = list(info_dict.keys())
+    if info_dict == "error_status":
+        await message.answer("Извините, но данная функция на ремонте🔧",reply_markup=keyboards.main_keyboard)
+        if message.from_user.id == int(config("Admin_ID")):
+            await message.answer("Необходим ремонт🛠️",reply_markup=keyboards.main_admin_keyboard)
+    else:
+        keys_dict = list(info_dict.keys())
 
-    await message.answer(f"{keys_dict[-2]} - <u><b>{info_dict[keys_dict[-2]][0]+info_dict[keys_dict[-2]][1]}</b></u>",
-    parse_mode="HTML")
-    await message.answer(f"{keys_dict[0]} - равна <u><b>{info_dict[keys_dict[0]][0]+" "+info_dict[keys_dict[0]][1]}</b></u> ",
-    parse_mode="HTML")
-    await message.answer(f"{keys_dict[-1]} равна - <u><b>{info_dict[keys_dict[-1]][0]+' '+info_dict[keys_dict[-1]][1]}</b></u>",parse_mode="HTML",reply_markup=keyboards.economy_Rus)
+        await message.answer(f"{keys_dict[-2]} - <u><b>{info_dict[keys_dict[-2]][0]+info_dict[keys_dict[-2]][1]}</b></u>",
+        parse_mode="HTML")
+        await message.answer(f"{keys_dict[0]} - равна <u><b>{info_dict[keys_dict[0]][0]+" "+info_dict[keys_dict[0]][1]}</b></u> ",
+        parse_mode="HTML")
+        await message.answer(f"{keys_dict[-1]} равна - <u><b>{info_dict[keys_dict[-1]][0]+' '+info_dict[keys_dict[-1]][1]}</b></u>",parse_mode="HTML",reply_markup=keyboards.economy_Rus)
 
 @router.message(F.text == "ВВП")
 async def VVP(message: types.Message):
     info_dict = parc.info_economy_rus()
 
-    keys_dict = list(info_dict.keys())
+    if info_dict == "error_status":
+        await message.answer("Извините, но данная функция на ремонте🔧",reply_markup=keyboards.main_keyboard)
+        if message.from_user.id == int(config("Admin_ID")):
+            await message.answer("Необходим ремонт🛠️",reply_markup=keyboards.main_admin_keyboard)
+    else:
+        keys_dict = list(info_dict.keys())
 
-    await message.answer(f"{keys_dict[1]} - <u><b>{info_dict[keys_dict[1]][0]+' '+info_dict[keys_dict[1]][1]}</b></u>",
-    parse_mode="HTML")
-    await message.answer(f"{keys_dict[2]} - <u><b>{info_dict[keys_dict[2]][0]+info_dict[keys_dict[2]][1]}</b></u>",
-    parse_mode="HTML",reply_markup=keyboards.economy_Rus)
+        await message.answer(f"{keys_dict[1]} - <u><b>{info_dict[keys_dict[1]][0]+' '+info_dict[keys_dict[1]][1]}</b></u>",
+        parse_mode="HTML")
+        await message.answer(f"{keys_dict[2]} - <u><b>{info_dict[keys_dict[2]][0]+info_dict[keys_dict[2]][1]}</b></u>",
+        parse_mode="HTML",reply_markup=keyboards.economy_Rus)
 
 @router.message(F.text == "Индекс промышленного производства")
 async def index_production(message: types.Message):
     info_dict = parc.info_economy_rus()
 
-    keys_dict = list(info_dict.keys())
+    if info_dict == "error_status":
+        await message.answer("Извините, но данная функция на ремонте🔧",reply_markup=keyboards.main_keyboard)
+        if message.from_user.id == int(config("Admin_ID")):
+            await message.answer("Необходим ремонт🛠️",reply_markup=keyboards.main_admin_keyboard)
+    else:
+        keys_dict = list(info_dict.keys())
 
-    await message.answer(f"{keys_dict[3]} - <u><b>{info_dict[keys_dict[3]][0]+info_dict[keys_dict[3]][1]}</b></u>",
-    parse_mode="HTML",reply_markup=keyboards.economy_Rus)
+        await message.answer(f"{keys_dict[3]} - <u><b>{info_dict[keys_dict[3]][0]+info_dict[keys_dict[3]][1]}</b></u>",
+        parse_mode="HTML",reply_markup=keyboards.economy_Rus)
 
 @router.message(F.text == "Индекс потребительских цен")
 async def index_price(message: types.Message):
     info_dict = parc.info_economy_rus()
 
-    keys_dict = list(info_dict.keys())
+    if info_dict == "error_status":
+        await message.answer("Извините, но данная функция на ремонте🔧",reply_markup=keyboards.main_keyboard)
+        if message.from_user.id == int(config("Admin_ID")):
+            await message.answer("Необходим ремонт🛠️",reply_markup=keyboards.main_admin_keyboard)
+    else:
+        keys_dict = list(info_dict.keys())
 
-    await message.answer(f"{keys_dict[4]} - <u><b>{info_dict[keys_dict[4]][0]+info_dict[keys_dict[4]][1]}</b></u>",
-    parse_mode="HTML",reply_markup=keyboards.economy_Rus)
+        await message.answer(f"{keys_dict[4]} - <u><b>{info_dict[keys_dict[4]][0]+info_dict[keys_dict[4]][1]}</b></u>",
+        parse_mode="HTML",reply_markup=keyboards.economy_Rus)
 
 ##########################################################
 
@@ -339,10 +366,11 @@ async def get_info(message : types.Message):
 
 @router.message(F.text == "Версии бота🤖")
 async def versions(message: types.Message):
-    await message.answer("Версия бота - <u><b>0.3version</b></u> (Дата выхода: 13.08.2024  20:09)\n\n"
+    await message.answer("Версия бота - <u><b>0.5version</b></u> (Дата выхода: 07.11.2024  10:17)\n\n"
+    "Версия бота - <u><b>0.4version</b></u> (Дата выхода: 03.09.2024  16:18)\n\n"
+    "Версия бота - <u><b>0.3version</b></u> (Дата выхода: 16.08.2024  19:02)\n\n"
     "Версия бота - <u><b>0.2version</b></u> (Дата выхода: 13.08.2024  20:09)\n\n"
     "Версия бота - <u><b>0.1.5version</b></u> (Дата выхода: 12.08.2024  19:32)\n\n"
-    "Версия бота - <u><b>0.1.1version</b></u> (Дата выхода: 12.08.2024  18:19)\n\n"
     "Версия бота - <u><b>0.1version</b></u> (Дата выхода: 12.07.2024  20:46)",reply_markup=keyboards.Information_kb,parse_mode="HTML")
 
 ###################### Панель админа👑 ###################################
@@ -357,7 +385,7 @@ async def check_admin_command(message: types.Message):
     if message.from_user.id == int(config("Admin_ID")):
         status = parc.admin_info()
         work_or_not = ["Не Работает❗","Работает✔️"]
-        all_function = ["Курс валют(ЦБ РФ)🏛️",'Взлеты дня💹',"Падения дня📉","Рынок Сырья⛏️","Криптовалюта ₿","Индексы бирж📊📈"]
+        all_function = ["Курс валют(ЦБ РФ)🏛️",'Взлеты дня💹',"Падения дня📉","Рынок Сырья⛏️","Криптовалюта ₿","Индексы бирж📊📈","Экономика РФ"]
         answer = ''
 
         for item in range(len(status)):
@@ -429,7 +457,16 @@ async def switch_index(callback: types.CallbackQuery):
     await callback.message.answer(f"Функция (Индексы бирж📊📈) изменила своё состояние на <u><b>{switch[int(result)]}</b></u>💻",
     parse_mode="HTML",reply_markup=keyboards.admin_panel)
 
+@router.callback_query(F.data == 'economy')
+async def switch_economy(callback: types.CallbackQuery):
+    await callback.message.delete()
+
+    switch = ["OFF","ON"]
+    result = parc.admin_economy_switch()
+
+    await callback.message.answer(f"Функция (Экономика РФ) изменила своё состояние на <u><b>{switch[int(result)]}</b></u>💻",
+    parse_mode="HTML",reply_markup=keyboards.admin_panel)
 
 #################################################################
 
-#0.4 version
+#0.5 version

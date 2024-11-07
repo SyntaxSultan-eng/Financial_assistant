@@ -24,6 +24,7 @@ dropstk_status = True
 all_material_status = True
 crypto_status = True
 index_status = True
+economy_rus_status = True
 
 ######################################################
 
@@ -265,44 +266,68 @@ def index_Asia() -> list:
 ########################################################
 
 def inflation() -> dict:
+    global economy_rus_status
+
+    if economy_rus_status:
     
-    url = "https://www.cbr.ru/key-indicators/"
+        url = "https://www.cbr.ru/key-indicators/"
+        second_url = "https://www.cbr.ru/"
 
-    page = requests.get(url, headers=headers)
-    html = BS(page.content, features='lxml')
+        page = requests.get(url, headers=headers)
+        html = BS(page.content, features='lxml')
 
-    indicators_name = [item.text.strip() for item in html.find_all(class_ = "title")[:2]]
-    indicators_subname = [item.text.strip() for item in html.find_all(class_ ="denotement")[:3]]
-    indicators_value = [item.text.strip() for item in html.find_all(class_ ='value')[:3]]
+        indicators_name = [item.text.strip() for item in html.find_all(class_ = "title")[:2]]
+        indicators_subname = [item.text.strip() for item in html.find_all(class_ ="denotement")[:3]]
+        indicators_value = [item.text.strip() for item in html.find_all(class_ ='value')[:3]]
+        if len(indicators_name) == 0 or len(indicators_subname) == 0 or len(indicators_value) == 0:
+            economy_rus_status = False
+            return 'error_status', 'error_status'
+        indicators_dict = {indicators_name[0] : {indicators_subname[0]:indicators_value[0], indicators_subname[1]:indicators_value[1]},indicators_name[1] : indicators_value[2]}
 
-    indicators_dict = {indicators_name[0] : {indicators_subname[0]:indicators_value[0], indicators_subname[1]:indicators_value[1]},indicators_name[1] : indicators_value[2]}
+        second_page = requests.get(url=second_url,headers=headers)
+        second_html = BS(second_page.content, features='lxml')
 
-    return indicators_dict
+        if second_html.find(class_="main-indicator_comment-text") is None or second_html.find(class_="main-indicator_comment-date") is None:
+            economy_rus_status = False
+            return 'error_status', 'error_status'
 
+        next_meeting = {second_html.find(class_="main-indicator_comment-text").text.strip() : second_html.find(class_='main-indicator_comment-date').text.strip()}
+
+        return indicators_dict, next_meeting
+    return 'error_status'
 def info_economy_rus() -> dict:
-    url = "https://rosstat.gov.ru/"
+    global economy_rus_status
 
-    page = requests.get(url, headers=headers)
-    html_page = BS(page.content,features='lxml')
+    if economy_rus_status:
+        url = "https://rosstat.gov.ru/"
 
-    indicators_all = html_page.find_all(class_="indicators__cols")
-    indicators_info_dict = {}
+        page = requests.get(url, headers=headers)
+        html_page = BS(page.content,features='lxml')
 
-    for index in range(1,len(indicators_all)):
-        columns = indicators_all[index].find_all("div",{"class" :"indicators__col"})
-        info_data = []
-        for second_index in range(len(columns)):
-            str_data = columns[second_index].find("div", {"class" : "indicators__data"})
-            info_data.append(str_data.text.strip())
-        indicators_info_dict[info_data[0]] = (info_data[1],info_data[2])
+        indicators_all = html_page.find_all(class_="indicators__cols")
+        
+        if len(indicators_all) == 0:
+            economy_rus_status = False
+            return 'error_status'
 
-    return indicators_info_dict
+        indicators_info_dict = {}
+
+        for index in range(1,len(indicators_all)):
+            columns = indicators_all[index].find_all("div",{"class" :"indicators__col"})
+            info_data = []
+            for second_index in range(len(columns)):
+                str_data = columns[second_index].find("div", {"class" : "indicators__data"})
+                info_data.append(str_data.text.strip())
+            indicators_info_dict[info_data[0]] = (info_data[1],info_data[2])
+
+        return indicators_info_dict
+    return 'error_status'
 
 
 ########################################################
 
 def admin_info() -> list:
-    return [all_currency_status,growthstk_status,dropstk_status,all_material_status,crypto_status,index_status]
+    return [all_currency_status,growthstk_status,dropstk_status,all_material_status,crypto_status,index_status,economy_rus_status]
 
 def admin_currency_switch() -> bool:
     global all_currency_status
@@ -333,6 +358,11 @@ def admin_index_switch() -> bool:
     global index_status
     index_status = not index_status
     return index_status
+
+def admin_economy_switch() -> bool:
+    global economy_rus_status
+    economy_rus_status = not economy_rus_status
+    return economy_rus_status
 
 ########################################################
 

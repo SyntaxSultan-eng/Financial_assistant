@@ -67,7 +67,8 @@ toggle_panel = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="Курс валют(ЦБ РФ)🏛️", callback_data="currency")],
     [InlineKeyboardButton(text="Взлеты дня💹",callback_data="up"), InlineKeyboardButton(text="Падения дня📉", callback_data="down")],
     [InlineKeyboardButton(text="Рынок Сырья⛏️",callback_data="material")],
-    [InlineKeyboardButton(text="Криптовалюта ₿",callback_data="crypto"), InlineKeyboardButton(text="Индексы бирж📊📈",callback_data='index')]
+    [InlineKeyboardButton(text="Криптовалюта ₿",callback_data="crypto"), InlineKeyboardButton(text="Индексы бирж📊📈",callback_data='index')],
+    [InlineKeyboardButton(text="Экономика РФ", callback_data="economy")]
 ])
 
-#0.4 version
+#0.5 version
