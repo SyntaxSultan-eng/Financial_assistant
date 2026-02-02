@@ -3,7 +3,7 @@ from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State, default_state
 from aiogram.types import LinkPreviewOptions
-from decouple import config
+from config import config
 
 import app.keyboard as keyboards
 import app.parcer as parc
@@ -25,7 +25,7 @@ async def start_menu(message: types.Message):
         f'Этот бот должен упростить мониторинг финансовых изменений на рынке валют и не только.\nОриентируйтесь по кнопкам!',
         reply_markup=keyboards.main_keyboard
     )
-    if message.from_user.id == int(config("Admin_ID")):
+    if message.from_user.id == config.bot.admin_id:
         await message.answer("Вы вошли как администратор👑",reply_markup=keyboards.main_admin_keyboard)
 
 @router.message(Command("stocks"))
@@ -37,7 +37,7 @@ async def Market_stocks(message: types.Message):
 @router.message(F.text == "Главное меню↩")
 async def return_menu(message: types.Message):
     await message.answer("Возвращаю Вас на главное меню👨🏻‍💻", reply_markup=keyboards.main_keyboard)
-    if message.from_user.id == int(config("Admin_ID")):
+    if message.from_user.id == config.bot.admin_id:
         await message.answer("Вы вошли как администратор👑",reply_markup=keyboards.main_admin_keyboard)
 
 @router.message(Command('cancel'))
@@ -61,7 +61,7 @@ async def world_currency(message: types.Message):
     info_world_currency = parc.get_all_currency()
     if info_world_currency == "error_status":
         await message.answer("Извините, но данная функция на ремонте🔧",reply_markup=keyboards.main_keyboard)
-        if message.from_user.id == int(config("Admin_ID")):
+        if message.from_user.id == config.bot.admin_id:
             await message.answer("Необходим ремонт🛠️",reply_markup=keyboards.main_admin_keyboard)
     else:
         for item in info_world_currency:
@@ -77,7 +77,7 @@ async def world_currency(message: types.Message):
 
             await message.answer(f"💵{currency_nums} {сurrency_codename} (<b>{currency_name}</b>) — <u><b>{currency_value}₽</b></u>",
             reply_markup=keyboards.main_keyboard,parse_mode="HTML")
-        if message.from_user.id == int(config("Admin_ID")):
+        if message.from_user.id == config.bot.admin_id:
             await message.answer("Вы вошли как администратор👑",reply_markup=keyboards.main_admin_keyboard)
 
 
@@ -283,7 +283,7 @@ async def get_inflation(message: types.Message):
 
     if data == "error_status":
         await message.answer("Извините, но данная функция на ремонте🔧",reply_markup=keyboards.main_keyboard)
-        if message.from_user.id == int(config("Admin_ID")):
+        if message.from_user.id == config.bot.admin_id:
             await message.answer("Необходим ремонт🛠️",reply_markup=keyboards.main_admin_keyboard)
     else:
         await message.answer(f"Инфляция на момент времени {list(data['Инфляция'].keys())[1]} (ЦБ РФ) равна - <u><b>{data["Инфляция"][list(data['Инфляция'].keys())[1]]}</b></u>", 
@@ -300,7 +300,7 @@ async def unemployment(message: types.Message):
 
     if info_dict == "error_status":
         await message.answer("Извините, но данная функция на ремонте🔧",reply_markup=keyboards.main_keyboard)
-        if message.from_user.id == int(config("Admin_ID")):
+        if message.from_user.id == config.bot.admin_id:
             await message.answer("Необходим ремонт🛠️",reply_markup=keyboards.main_admin_keyboard)
     else:
         keys_dict = list(info_dict.keys())
@@ -317,7 +317,7 @@ async def VVP(message: types.Message):
 
     if info_dict == "error_status":
         await message.answer("Извините, но данная функция на ремонте🔧",reply_markup=keyboards.main_keyboard)
-        if message.from_user.id == int(config("Admin_ID")):
+        if message.from_user.id == config.bot.admin_id:
             await message.answer("Необходим ремонт🛠️",reply_markup=keyboards.main_admin_keyboard)
     else:
         keys_dict = list(info_dict.keys())
@@ -333,7 +333,7 @@ async def index_production(message: types.Message):
 
     if info_dict == "error_status":
         await message.answer("Извините, но данная функция на ремонте🔧",reply_markup=keyboards.main_keyboard)
-        if message.from_user.id == int(config("Admin_ID")):
+        if message.from_user.id == config.bot.admin_id:
             await message.answer("Необходим ремонт🛠️",reply_markup=keyboards.main_admin_keyboard)
     else:
         keys_dict = list(info_dict.keys())
@@ -347,7 +347,7 @@ async def index_price(message: types.Message):
 
     if info_dict == "error_status":
         await message.answer("Извините, но данная функция на ремонте🔧",reply_markup=keyboards.main_keyboard)
-        if message.from_user.id == int(config("Admin_ID")):
+        if message.from_user.id == config.bot.admin_id:
             await message.answer("Необходим ремонт🛠️",reply_markup=keyboards.main_admin_keyboard)
     else:
         keys_dict = list(info_dict.keys())
@@ -377,12 +377,12 @@ async def versions(message: types.Message):
 
 @router.message(F.text == "Панель админа👑")
 async def admin(message: types.Message):
-    if message.from_user.id == int(config("Admin_ID")):
+    if message.from_user.id == config.bot.admin_id:
         await message.answer("Пункт управления🕹️",reply_markup=keyboards.admin_panel)
 
 @router.message(F.text == "Состояние команд📋")
 async def check_admin_command(message: types.Message):
-    if message.from_user.id == int(config("Admin_ID")):
+    if message.from_user.id == config.bot.admin_id:
         status = parc.admin_info()
         work_or_not = ["Не Работает❗","Работает✔️"]
         all_function = ["Курс валют(ЦБ РФ)🏛️",'Взлеты дня💹',"Падения дня📉","Рынок Сырья⛏️","Криптовалюта ₿","Индексы бирж📊📈","Экономика РФ"]
@@ -394,7 +394,7 @@ async def check_admin_command(message: types.Message):
 
 @router.message(F.text == "Отключить/Включить функцию")
 async def admin_root(message: types.Message):
-    if message.from_user.id == int(config("Admin_ID")):
+    if message.from_user.id == config.bot.admin_id:
         await message.answer("Выбери функцию, которую нужно вкл/выкл.", reply_markup=keyboards.toggle_panel)
 
 @router.callback_query(F.data == "currency")

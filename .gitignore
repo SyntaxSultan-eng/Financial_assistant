@@ -1,4 +1,4 @@
 .env
-*.pyc
-ParcerTest.py
 .venv
+__pycache__/
+ParcerTest.py
