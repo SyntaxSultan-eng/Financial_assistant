@@ -1,5 +1,7 @@
-from aiogram.types import ReplyKeyboardMarkup,KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
+from aiogram.types import ReplyKeyboardMarkup, KeyboardButton, InlineKeyboardButton, InlineKeyboardMarkup
 
+
+# Кнопки для главного меню(не админ)
 main_keyboard = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text = 'Курс валют(ЦБ РФ)🏛️'),KeyboardButton(text = 'Рынок акций🌐')],
     [KeyboardButton(text = "Информация📜"), KeyboardButton(text = "Экономика РФ")]
@@ -7,6 +9,8 @@ main_keyboard = ReplyKeyboardMarkup(keyboard=[
     resize_keyboard= True,
     input_field_placeholder='Выберите режим',
 )
+
+# Кнопки для главного меню(админ)
 main_admin_keyboard = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text = 'Курс валют(ЦБ РФ)🏛️'),KeyboardButton(text = 'Рынок акций🌐')],
     [KeyboardButton(text = "Информация📜"), KeyboardButton(text="Экономика РФ")],
@@ -15,7 +19,10 @@ main_admin_keyboard = ReplyKeyboardMarkup(keyboard=[
     resize_keyboard= True,
     input_field_placeholder='Выберите режим',
 )
+
 #################################################
+################ Раздел Рынок акций #############
+
 stocks_keyboard = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text = "Взлеты дня💹"), KeyboardButton(text="Падения дня📉"), KeyboardButton(text="Рынок Сырья⛏️")],
     [KeyboardButton(text = "Криптовалюта ₿"),KeyboardButton(text = "Индексы бирж📊📈")],
@@ -29,7 +36,7 @@ indices_keyboard = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="США", callback_data="USA")],
     [InlineKeyboardButton(text = "Азия", callback_data="Asia")]
 ])
-#################################################
+
 material_keyboard = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text="Энергетика⚡"), KeyboardButton(text="Металлы🔩")],
     [KeyboardButton(text="Сельское хоз. 🌱"), KeyboardButton(text="Промышленность⚙️")],
@@ -37,7 +44,9 @@ material_keyboard = ReplyKeyboardMarkup(keyboard=[
 ],
     resize_keyboard=True
 )
+
 #################################################
+############### Раздел Экономика РФ #############
 
 economy_Rus = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text="Инфляция"), KeyboardButton(text="Безработица")],
@@ -49,12 +58,14 @@ economy_Rus = ReplyKeyboardMarkup(keyboard=[
 )
 
 #################################################
+####### Раздел Информации + Админ панель ########
+
 Information_kb = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text="Версии бота🤖"), KeyboardButton(text= "Главное меню↩")]
 ],
     resize_keyboard=True
 )
-#################################################
+
 admin_panel = ReplyKeyboardMarkup(keyboard=[
     [KeyboardButton(text="Состояние команд📋"), KeyboardButton(text="Отключить/Включить функцию")],
     [KeyboardButton(text="Главное меню↩")]
@@ -71,4 +82,7 @@ toggle_panel = InlineKeyboardMarkup(inline_keyboard=[
     [InlineKeyboardButton(text="Экономика РФ", callback_data="economy")]
 ])
 
-#0.5 version
+#TODO
+#Разбить код на несколько файлов(main_keyboard.py, stocks_keyboard.py и т.д)
+#Создать base.py, где будет храниться константы("Главное меню↩" и т.д) (как в config базовый класс)
+#Настроить __init__.py

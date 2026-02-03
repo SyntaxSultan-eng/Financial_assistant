@@ -5,11 +5,19 @@ from aiogram.fsm.state import StatesGroup, State, default_state
 from aiogram.types import LinkPreviewOptions
 from config import config
 
-import app.keyboard as keyboards
-import app.parcer as parc
+import keyboards.keyboard as keyboards
+import services.parcer as parc
 import datetime
 
 #############################################
+#TODO
+#Разделить ├── common.py
+#      │   ├── currency.py
+#      │   ├── stocks.py
+#      │   ├── economy.py
+#      │   ├── admin.py
+#      │   └── states.py
+#Или что-то подобное.
 
 router = Router()
 
