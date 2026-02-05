@@ -4,6 +4,7 @@ from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State, default_state
 from aiogram.types import LinkPreviewOptions
 from .mainmenu import Mainmenu_Router
+from .admin import Admin_Router
 from config import config
 
 import keyboards.keyboard as keyboards
@@ -12,15 +13,16 @@ import datetime
 
 #############################################
 #TODO
-#Разделить ├── common.py
+#Разделить ├── mainmenu.py +
 #      │   ├── currency.py
 #      │   ├── stocks.py
 #      │   ├── economy.py
-#      │   ├── admin.py
+#      │   ├── admin.py +
 #      │   └── states.py
 #Или что-то подобное.
 
 router = Router()
+router.include_router(Admin_Router)
 router.include_router(Mainmenu_Router)
 
 class Form(StatesGroup):
@@ -355,118 +357,6 @@ async def index_price(message: types.Message):
 
         await message.answer(f"{keys_dict[4]} - <u><b>{info_dict[keys_dict[4]][0]+info_dict[keys_dict[4]][1]}</b></u>",
         parse_mode="HTML",reply_markup=keyboards.economy_Rus)
-
-##########################################################
-
-################# Информация📜 ################################
-
-# @router.message(F.text == "Информация📜")
-# async def get_info(message : types.Message):
-#     await message.answer("Этот бот небольшой пет-проект. Хотелось сделать помощника по финансовому рынку и не только.\n\n"
-#     "github разработчика - <u>https://github.com/SyntaxSultan-eng</u> (Пока там ничего нет, но вдруг что-то изменится)", reply_markup=keyboards.Information_kb, parse_mode="HTML")
-
-@router.message(F.text == "Версии бота🤖")
-async def versions(message: types.Message):
-    await message.answer("Версия бота - <u><b>0.5version</b></u> (Дата выхода: 07.11.2024  10:17)\n\n"
-    "Версия бота - <u><b>0.4version</b></u> (Дата выхода: 03.09.2024  16:18)\n\n"
-    "Версия бота - <u><b>0.3version</b></u> (Дата выхода: 16.08.2024  19:02)\n\n"
-    "Версия бота - <u><b>0.2version</b></u> (Дата выхода: 13.08.2024  20:09)\n\n"
-    "Версия бота - <u><b>0.1.5version</b></u> (Дата выхода: 12.08.2024  19:32)\n\n"
-    "Версия бота - <u><b>0.1version</b></u> (Дата выхода: 12.07.2024  20:46)",reply_markup=keyboards.Information_kb,parse_mode="HTML")
-
-###################### Панель админа👑 ###################################
-
-@router.message(F.text == "Панель админа👑")
-async def admin(message: types.Message):
-    if message.from_user.id == config.bot.admin_id:
-        await message.answer("Пункт управления🕹️",reply_markup=keyboards.admin_panel)
-
-@router.message(F.text == "Состояние команд📋")
-async def check_admin_command(message: types.Message):
-    if message.from_user.id == config.bot.admin_id:
-        status = parc.admin_info()
-        work_or_not = ["Не Работает❗","Работает✔️"]
-        all_function = ["Курс валют(ЦБ РФ)🏛️",'Взлеты дня💹',"Падения дня📉","Рынок Сырья⛏️","Криптовалюта ₿","Индексы бирж📊📈","Экономика РФ"]
-        answer = ''
-
-        for item in range(len(status)):
-            answer += f'{all_function[item]} — {work_or_not[int(status[item])]}\n\n'
-    await message.answer(answer,reply_markup=keyboards.admin_panel)
-
-@router.message(F.text == "Отключить/Включить функцию")
-async def admin_root(message: types.Message):
-    if message.from_user.id == config.bot.admin_id:
-        await message.answer("Выбери функцию, которую нужно вкл/выкл.", reply_markup=keyboards.toggle_panel)
-
-@router.callback_query(F.data == "currency")
-async def switch_currency(callback: types.CallbackQuery):
-    await callback.message.delete()
-
-    switch = ["OFF", "ON"]
-    result = parc.admin_currency_switch()
-
-    await callback.message.answer(f"Функция (Курс валют(ЦБ РФ)🏛️) изменила своё состояние на <u><b>{switch[int(result)]}</b></u>💻",
-    parse_mode="HTML",reply_markup=keyboards.admin_panel)
-
-@router.callback_query(F.data == 'up')
-async def switch_up_stocks(callback: types.CallbackQuery):
-    await callback.message.delete()
-
-    switch = ["OFF","ON"]
-    result = parc.admin_stocks_up_switch()
-
-    await callback.message.answer(f"Функция (Взлеты дня💹) изменила своё состояние на <u><b>{switch[int(result)]}</b></u>💻",
-    parse_mode="HTML",reply_markup=keyboards.admin_panel)
-
-@router.callback_query(F.data =="down")
-async def switch_down_stocks(callback: types.CallbackQuery):
-    await callback.message.delete()
-
-    switch = ["OFF", "ON"]
-    result = parc.admin_stocks_down_switch()
-
-    await callback.message.answer(f"Функция (Падения дня📉) изменила своё состояние на <u><b>{switch[int(result)]}</b></u>💻",
-    parse_mode="HTML",reply_markup=keyboards.admin_panel)
-
-@router.callback_query(F.data == "material")
-async def switch_material(callback: types.CallbackQuery):
-    await callback.message.delete()
-
-    switch = ["OFF","ON"]
-    result = parc.admin_material_switch()
-
-    await callback.message.answer(f"Функция (Рынок Сырья⛏️) изменила своё состояние на <u><b>{switch[int(result)]}</b></u>💻",
-    parse_mode="HTML",reply_markup=keyboards.admin_panel)
-    
-@router.callback_query(F.data == "crypto")
-async def switch_crypto(callback: types.CallbackQuery):
-    await callback.message.delete()
-
-    switch = ["OFF", "ON"]
-    result = parc.admin_crypto_switch()
-
-    await callback.message.answer(f"Функция (Криптовалюта ₿) изменила своё состояние на <u><b>{switch[int(result)]}</b></u>💻",
-    parse_mode="HTML",reply_markup=keyboards.admin_panel)
-
-@router.callback_query(F.data == "index")
-async def switch_index(callback: types.CallbackQuery):
-    await callback.message.delete()
-
-    switch = ["OFF","ON"]
-    result = parc.admin_index_switch()
-
-    await callback.message.answer(f"Функция (Индексы бирж📊📈) изменила своё состояние на <u><b>{switch[int(result)]}</b></u>💻",
-    parse_mode="HTML",reply_markup=keyboards.admin_panel)
-
-@router.callback_query(F.data == 'economy')
-async def switch_economy(callback: types.CallbackQuery):
-    await callback.message.delete()
-
-    switch = ["OFF","ON"]
-    result = parc.admin_economy_switch()
-
-    await callback.message.answer(f"Функция (Экономика РФ) изменила своё состояние на <u><b>{switch[int(result)]}</b></u>💻",
-    parse_mode="HTML",reply_markup=keyboards.admin_panel)
 
 #################################################################
 
