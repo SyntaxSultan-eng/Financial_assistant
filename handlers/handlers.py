@@ -1,8 +1,9 @@
-from aiogram import types, Router,F
+from aiogram import types, Router, F
 from aiogram.filters import Command, StateFilter
 from aiogram.fsm.context import FSMContext
 from aiogram.fsm.state import StatesGroup, State, default_state
 from aiogram.types import LinkPreviewOptions
+from .mainmenu import Mainmenu_Router
 from config import config
 
 import keyboards.keyboard as keyboards
@@ -20,21 +21,13 @@ import datetime
 #Или что-то подобное.
 
 router = Router()
+router.include_router(Mainmenu_Router)
 
 class Form(StatesGroup):
     need_currency = State()
 
 
 ##################### Главные команды ########################
-
-@router.message(Command('start'))
-async def start_menu(message: types.Message):
-    await message.answer(f'Здравствуйте, {message.from_user.first_name}!\n'
-        f'Этот бот должен упростить мониторинг финансовых изменений на рынке валют и не только.\nОриентируйтесь по кнопкам!',
-        reply_markup=keyboards.main_keyboard
-    )
-    if message.from_user.id == config.bot.admin_id:
-        await message.answer("Вы вошли как администратор👑",reply_markup=keyboards.main_admin_keyboard)
 
 @router.message(Command("stocks"))
 @router.message(F.text == 'Рынок акций🌐')
@@ -367,10 +360,10 @@ async def index_price(message: types.Message):
 
 ################# Информация📜 ################################
 
-@router.message(F.text == "Информация📜")
-async def get_info(message : types.Message):
-    await message.answer("Этот бот небольшой пет-проект. Хотелось сделать помощника по финансовому рынку и не только.\n\n"
-    "github разработчика - <u>https://github.com/SyntaxSultan-eng</u> (Пока там ничего нет, но вдруг что-то изменится)", reply_markup=keyboards.Information_kb, parse_mode="HTML")
+# @router.message(F.text == "Информация📜")
+# async def get_info(message : types.Message):
+#     await message.answer("Этот бот небольшой пет-проект. Хотелось сделать помощника по финансовому рынку и не только.\n\n"
+#     "github разработчика - <u>https://github.com/SyntaxSultan-eng</u> (Пока там ничего нет, но вдруг что-то изменится)", reply_markup=keyboards.Information_kb, parse_mode="HTML")
 
 @router.message(F.text == "Версии бота🤖")
 async def versions(message: types.Message):
