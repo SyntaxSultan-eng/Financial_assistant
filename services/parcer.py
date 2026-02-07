@@ -298,29 +298,32 @@ def inflation() -> dict:
 def info_economy_rus() -> dict:
     global economy_rus_status
 
-    if economy_rus_status:
-        url = "https://rosstat.gov.ru/"
+    try:
+        if economy_rus_status:
+            url = "https://rosstat.gov.ru/"
 
-        page = requests.get(url, headers=headers)
-        html_page = BS(page.content,features='lxml')
+            page = requests.get(url, headers=headers)
+            html_page = BS(page.content,features='lxml')
 
-        indicators_all = html_page.find_all(class_="indicators__cols")
-        
-        if len(indicators_all) == 0:
-            economy_rus_status = False
-            return 'error_status'
+            indicators_all = html_page.find_all(class_="indicators__cols")
+            
+            if len(indicators_all) == 0:
+                economy_rus_status = False
+                return 'error_status'
 
-        indicators_info_dict = {}
+            indicators_info_dict = {}
 
-        for index in range(1,len(indicators_all)):
-            columns = indicators_all[index].find_all("div",{"class" :"indicators__col"})
-            info_data = []
-            for second_index in range(len(columns)):
-                str_data = columns[second_index].find("div", {"class" : "indicators__data"})
-                info_data.append(str_data.text.strip())
-            indicators_info_dict[info_data[0]] = (info_data[1],info_data[2])
+            for index in range(1,len(indicators_all)):
+                columns = indicators_all[index].find_all("div",{"class" :"indicators__col"})
+                info_data = []
+                for second_index in range(len(columns)):
+                    str_data = columns[second_index].find("div", {"class" : "indicators__data"})
+                    info_data.append(str_data.text.strip())
+                indicators_info_dict[info_data[0]] = (info_data[1],info_data[2])
 
-        return indicators_info_dict
+            return indicators_info_dict
+    except Exception:
+        return 'error_status'
     return 'error_status'
 
 

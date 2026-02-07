@@ -11,6 +11,9 @@ from config import config
 
 
 ###############################
+#TODO
+#Перенести AdminFunctionManager в parcer для
+#проверки доступности функции
 
 Admin_Router = Router()
 
