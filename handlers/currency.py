@@ -7,7 +7,7 @@ from keyboards import (
     main_keyboard
 )
 from .admin import id_check_admin
-import services.parcer as parc
+from services import CBRClient
 
 #################################
 
@@ -18,19 +18,21 @@ Currency_Router = Router()
 @Currency_Router.message(Command('currency'))
 @Currency_Router.message(F.text == 'Курс валют(ЦБ РФ)🏛️')
 async def world_currency(message: Message) -> None:
-    info_world_currency = parc.get_all_currency()
-    if info_world_currency == 'error_status':
-        await message.answer(
-            'Извините, но данная функция на ремонте🔧',
-            reply_markup=main_keyboard
-        )
-        await id_check_admin(
-            message=message,
-            user_id=message.from_user.id,
-            text='Необходим ремонт🛠️',
-            keyboard_name=main_admin_keyboard
-        )
-        return
+    async with CBRClient() as client:
+        info_world_currency = await client.get_popular_currency()
+        
+    # if info_world_currency == 'error_status':
+    #     await message.answer(
+    #         'Извините, но данная функция на ремонте🔧',
+    #         reply_markup=main_keyboard
+    #     )
+    #     await id_check_admin(
+    #         message=message,
+    #         user_id=message.from_user.id,
+    #         text='Необходим ремонт🛠️',
+    #         keyboard_name=main_admin_keyboard
+    #     )
+    #     return
     
     #Отправка курса валют
     for item in info_world_currency:

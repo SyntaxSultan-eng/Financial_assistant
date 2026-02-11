@@ -9,6 +9,18 @@ import asyncio
 # И становится видно модуль config
 from config import config 
 
+#############################
+
+POPULAR_CURRENCY = (
+    'USD',
+    'EUR',
+    'JPY',
+    'GBP',
+    'CHF',
+    'CNY'
+)
+
+#############################
 
 class CBRClient:
     """Класс для парсинга валют с Центробанка"""
@@ -25,33 +37,50 @@ class CBRClient:
         if self.session:
             await self.session.close()
 
-    async def get_data_xml(self):
-        async with self.session.get(config.cbr.currency_url) as response:
-            return await response.text()
-    
-    async def get_current_currency(self):
-        xml_data = await self.get_data_xml()
+    async def get_data_xml(self, date=None):
+        url = config.cbr.currency_url
 
-        root = ET.fromstring(xml_data)
+        if date:
+            url = config.cbr.currency_url + f'?date_req={date}' # date = dd/mm/yy
+
+        async with self.session.get(url) as response:
+            return ET.fromstring(await response.text()) # Сразу парсим
+    
+    async def get_popular_currency(self) -> list:
+        root = await self.get_data_xml()
+
+        data = []
 
         for valute in root.findall('Valute'):
-            print(valute.find('Name').text, valute.find('Value').text)
+            if valute.find('CharCode').text in POPULAR_CURRENCY:
+                information = (
+                    valute.find('NumCode').text,
+                    valute.find('CharCode').text,
+                    valute.find('Nominal').text,
+                    valute.find('Name').text,
+                    valute.find('Value').text
+                )
+                data.append(information)
+        return data
+        
         
 async def main():
     async with CBRClient() as client:
-        await client.get_current_currency()
-
+        print(await client.get_popular_currency())
+        
 
 if __name__ == '__main__':
     asyncio.run(main())
 
 
-# <Valuta name="Foreign Currency Market Lib">
-#   <Item ID="R01010">
-#       <Name>Австралийский доллар</Name>
-#       <EngName>Australian Dollar</EngName>
-#       <Nominal>1</Nominal>
-#       <ParentCode>R01010 </ParentCode>
-#       <ISO_Num_Code>36</ISO_Num_Code>
-#       <ISO_Char_Code>AUD</ISO_Char_Code>
-#   </Item>
+# <?xml version="1.0" encoding="windows-1251"?>
+#     <ValCurs Date="11.02.2026" name="Foreign Currency Market">
+#         <Valute ID="R01010">
+#             <NumCode>036</NumCode>
+#             <CharCode>AUD</CharCode>
+#             <Nominal>1</Nominal>
+#             <Name>Австралийский доллар</Name>
+#             <Value>54,6254</Value>
+#                 <VunitRate>54,6254</VunitRate>
+#             </Valute><Valute ID="R01020A">
+
