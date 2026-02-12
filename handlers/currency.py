@@ -4,7 +4,8 @@ from aiogram.types import Message
 
 from keyboards import (
     main_admin_keyboard,
-    main_keyboard
+    main_keyboard,
+    currency_keyboard
 )
 from .admin import id_check_admin
 from services import CBRClient
@@ -17,6 +18,14 @@ Currency_Router = Router()
 
 @Currency_Router.message(Command('currency'))
 @Currency_Router.message(F.text == 'Курс валют(ЦБ РФ)🏛️')
+async def currency_menu(message: Message) -> None:
+    await message.answer(
+        'Меню для изучения котировок валют.\n'
+        'Выберете команду.',
+        reply_markup=currency_keyboard
+    )
+
+@Currency_Router.message(F.text == 'Основные валюты🚀')
 async def world_currency(message: Message) -> None:
     async with CBRClient() as client:
         info_world_currency = await client.get_popular_currency()

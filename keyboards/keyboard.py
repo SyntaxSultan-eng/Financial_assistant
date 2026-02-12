@@ -21,6 +21,20 @@ main_admin_keyboard = ReplyKeyboardMarkup(keyboard=[
 )
 
 #################################################
+################ Раздел Валют ###################
+
+currency_keyboard = ReplyKeyboardMarkup(keyboard=[
+    [KeyboardButton(text = 'Основные валюты🚀'), KeyboardButton(text = 'Поиск валюты 🔍')],
+    [KeyboardButton(text = 'Исторические данные📈'), KeyboardButton(text = 'Избранное ⭐')],
+    [KeyboardButton(text = 'Настройки ⚙️')],
+    [KeyboardButton(text = "Главное меню↩")]
+],
+    resize_keyboard=True,
+    input_field_placeholder='Выберите режим',
+)
+
+
+#################################################
 ################ Раздел Рынок акций #############
 
 stocks_keyboard = ReplyKeyboardMarkup(keyboard=[
