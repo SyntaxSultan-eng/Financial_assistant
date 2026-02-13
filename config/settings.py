@@ -16,7 +16,17 @@ class BotConfig:
 class CBR_ParcerConfig:
     """Класс для хранения url парсера api Центробанка"""
 
+    POPULAR_CURRENCY = (
+        'USD',
+        'EUR',
+        'JPY',
+        'GBP',
+        'CHF',
+        'CNY'
+    )
+
     def __init__(self):
+        self.cache = {}
         self.currency_url = 'http://www.cbr.ru/scripts/XML_daily.asp'
 
 class AppConfig:

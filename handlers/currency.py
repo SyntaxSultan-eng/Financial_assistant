@@ -1,6 +1,7 @@
 from aiogram import Router, F
 from aiogram.filters import Command
 from aiogram.types import Message
+from datetime import date
 
 from keyboards import (
     main_admin_keyboard,
@@ -21,8 +22,9 @@ Currency_Router = Router()
 async def currency_menu(message: Message) -> None:
     await message.answer(
         'Меню для изучения котировок валют.\n'
-        'Выберете команду.',
-        reply_markup=currency_keyboard
+        '<b>Выберете команду.</b>',
+        reply_markup=currency_keyboard,
+        parse_mode="HTML"
     )
 
 @Currency_Router.message(F.text == 'Основные валюты🚀')
@@ -30,18 +32,18 @@ async def world_currency(message: Message) -> None:
     async with CBRClient() as client:
         info_world_currency = await client.get_popular_currency()
         
-    # if info_world_currency == 'error_status':
-    #     await message.answer(
-    #         'Извините, но данная функция на ремонте🔧',
-    #         reply_markup=main_keyboard
-    #     )
-    #     await id_check_admin(
-    #         message=message,
-    #         user_id=message.from_user.id,
-    #         text='Необходим ремонт🛠️',
-    #         keyboard_name=main_admin_keyboard
-    #     )
-    #     return
+    if info_world_currency is None:
+        await message.answer(
+            'Извините, но данная функция на ремонте🔧',
+            reply_markup=main_keyboard
+        )
+        await id_check_admin(
+            message=message,
+            user_id=message.from_user.id,
+            text='Необходим ремонт🛠️',
+            keyboard_name=main_admin_keyboard
+        )
+        return
     
     #Отправка курса валют
     for item in info_world_currency:
@@ -54,11 +56,11 @@ async def world_currency(message: Message) -> None:
         await message.answer(
             f'💵{currency_nums} {сurrency_codename} '
             f'(<b>{currency_name}</b>) — <u><b>{currency_value}₽</b></u>',
-            reply_markup=main_keyboard,parse_mode="HTML"
+            parse_mode="HTML"
         )
-    await id_check_admin(
-        message=message,
-        user_id=message.from_user.id,
-        text='Вы вошли как администратор👑',
-        keyboard_name=main_admin_keyboard
+    await message.answer(
+        'Курс основных валют по ЦБ РФ на дату: '
+        f'<u>{date.today().strftime('%d.%m.%Y')}</u>',
+        reply_markup=currency_keyboard,
+        parse_mode="HTML"
     )
