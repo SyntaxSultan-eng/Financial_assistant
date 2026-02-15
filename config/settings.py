@@ -28,6 +28,7 @@ class CBR_ParcerConfig:
     def __init__(self):
         self.cache = {}
         self.currency_url = 'http://www.cbr.ru/scripts/XML_daily.asp'
+        self.pdf_file_url = os.path.join('config','requirements','currency.pdf')
 
 class AppConfig:
     """Класс настройки чувствительной информации"""

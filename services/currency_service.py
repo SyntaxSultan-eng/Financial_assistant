@@ -83,7 +83,7 @@ class CBRClient:
         return data
     
     async def find_currency(self, name: str) -> tuple:
-        id = hash(name)
+        id = name.lower()
 
         if id in self.cache:
             data = self.get_data_from_cache(id)
@@ -96,15 +96,21 @@ class CBRClient:
             return None
         
         for valute in root.findall('Valute'):
-            information = (
-                valute.find('NumCode').text.lower(),
-                valute.find('CharCode').text.lower(),
-                valute.find('Nominal').text,
-                valute.find('Name').text.lower(),
-                valute.find('Value').text
-            )
 
-            if name.lower() in information:
+            if (
+                name.lower() == valute.find('CharCode').text.lower() or 
+                name.lower() == valute.find('Name').text.lower() or
+                name == valute.find('NumCode').text
+            ):
+
+                information = (
+                    valute.find('NumCode').text,
+                    valute.find('CharCode').text,
+                    valute.find('Nominal').text,
+                    valute.find('Name').text,
+                    valute.find('Value').text
+                )
+
                 self.set_data_in_cache(
                     data=information,
                     id=id
@@ -115,11 +121,9 @@ class CBRClient:
         
 async def main():
     async with CBRClient() as client:
-        print(await client.get_popular_currency())
-        print(client.cache)
-        print(await client.get_popular_currency())
-        
+        print(await client.find_currency('012'))
 
+        
 if __name__ == '__main__':
     asyncio.run(main())
 

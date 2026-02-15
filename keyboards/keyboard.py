@@ -33,6 +33,11 @@ currency_keyboard = ReplyKeyboardMarkup(keyboard=[
     input_field_placeholder='Выберите режим',
 )
 
+show_all_currency = InlineKeyboardMarkup(inline_keyboard=[
+    [InlineKeyboardButton(text='Показать валюты', callback_data='get_all_currency')],
+    [InlineKeyboardButton(text='Не показывать валюты', callback_data='skip')]
+])
+
 
 #################################################
 ################ Раздел Рынок акций #############

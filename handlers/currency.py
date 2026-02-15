@@ -1,6 +1,6 @@
 from aiogram import Router, F
 from aiogram.filters import Command
-from aiogram.types import Message
+from aiogram.types import Message, CallbackQuery, FSInputFile
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
 from datetime import date
@@ -8,10 +8,12 @@ from datetime import date
 from keyboards import (
     main_admin_keyboard,
     main_keyboard,
-    currency_keyboard
+    currency_keyboard,
+    show_all_currency
 )
 from .admin import id_check_admin
 from services import CBRClient
+from config import config
 
 #################################
 
@@ -19,6 +21,7 @@ Currency_Router = Router()
 
 class Need_Currency(StatesGroup):
     user_input = State()
+    user_date = State()
 
 #################################
 
@@ -71,15 +74,47 @@ async def world_currency(message: Message) -> None:
     )
 
 @Currency_Router.message(F.text == 'Поиск валюты 🔍')
-async def search_currency(message: Message, state: FSMContext):
+async def search_currency(message: Message):
     await message.answer(
         'Введите валюту, которая Вас интересует.\n\n'
         'Можно указать:\n'
         '<i>Полное название</i>\n'
         '<i>Тикер валюты</i>\n'
         '<i>Номер</i>\n'
-        '<u><b>Ввод не чувствителен к регистру</b></u>.',
+        '<u><b>Ввод не чувствителен к регистру</b></u>.'
+        'Также возможно выбрать курс валюты на заданную дату.\n'
+        'Крайняя дата: 01.07.1992 - Сегодня\n',
         parse_mode="HTML"
+    )
+    await message.answer(
+        'Можете вывести данные о всех валютах в pdf файле '
+        '(Название, тикер, код)',
+        reply_markup=show_all_currency
+    )
+
+@Currency_Router.callback_query(F.data == 'get_all_currency')
+async def get_pdf_currency(callback: CallbackQuery, state: FSMContext):
+    await callback.message.delete()
+
+    file_path = config.cbr.pdf_file_url
+    pdf_file = FSInputFile(file_path)
+
+    await callback.message.answer_document(
+        document=pdf_file,
+        caption="Валюта (ЦБ РФ)"
+    )
+    
+    await callback.message.answer(
+        "Вы можете продолжить ввод названия.↓"
+    )
+    await state.set_state(Need_Currency.user_input)
+
+
+@Currency_Router.callback_query(F.data == 'skip')
+async def skip_all_currency(callback: CallbackQuery, state: FSMContext):
+    await callback.message.delete()
+    await callback.message.answer(
+        "Вы можете продолжить ввод названия.↓"
     )
     await state.set_state(Need_Currency.user_input)
 
@@ -113,9 +148,9 @@ async def get_find_currency(message: Message, state: FSMContext):
         await state.clear()
         return
     
-    сurrency_codename = information[1].upper()
+    сurrency_codename = information[1]
     currency_nums = information[2]
-    currency_name = information[3].capitalize()
+    currency_name = information[3]
     currency_value = information[4]
     
     await message.answer(
