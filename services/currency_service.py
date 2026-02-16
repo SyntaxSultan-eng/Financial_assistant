@@ -64,7 +64,6 @@ class CBRClient:
             return None
 
         data = []
-
         for valute in root.findall('Valute'):
             if valute.find('CharCode').text in config.cbr.POPULAR_CURRENCY:
                 information = (
@@ -72,7 +71,8 @@ class CBRClient:
                     valute.find('CharCode').text,
                     valute.find('Nominal').text,
                     valute.find('Name').text,
-                    valute.find('Value').text
+                    valute.find('Value').text,
+                    root.attrib['Date']
                 )
                 data.append(information)
 
@@ -82,15 +82,16 @@ class CBRClient:
         )
         return data
     
-    async def find_currency(self, name: str) -> tuple:
+    async def find_currency(self, name: str, date: str) -> tuple:
         id = name.lower()
 
-        if id in self.cache:
+        if id in self.cache and date in self.cache:
             data = self.get_data_from_cache(id)
+            print('кэш')
             if data:
                 return data
             
-        root = await self.get_data_xml()
+        root = await self.get_data_xml(date=date)
 
         if root is None:
             return None
@@ -108,20 +109,23 @@ class CBRClient:
                     valute.find('CharCode').text,
                     valute.find('Nominal').text,
                     valute.find('Name').text,
-                    valute.find('Value').text
+                    valute.find('Value').text,
+                    root.attrib['Date']
                 )
 
                 self.set_data_in_cache(
                     data=information,
                     id=id
                 )
+                print(information, 'не кэш')
                 return information
         return ()
 
         
 async def main():
     async with CBRClient() as client:
-        print(await client.find_currency('012'))
+        print(await client.get_popular_currency())
+        #print(await client.find_currency('Usd','02/07/2022'))
 
         
 if __name__ == '__main__':

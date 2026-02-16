@@ -3,13 +3,14 @@ from aiogram.filters import Command
 from aiogram.types import Message, CallbackQuery, FSInputFile
 from aiogram.fsm.state import State, StatesGroup
 from aiogram.fsm.context import FSMContext
-from datetime import date
+from datetime import date, datetime
 
 from keyboards import (
     main_admin_keyboard,
     main_keyboard,
     currency_keyboard,
-    show_all_currency
+    show_all_currency,
+    select_date
 )
 from .admin import id_check_admin
 from services import CBRClient
@@ -34,6 +35,8 @@ async def currency_menu(message: Message) -> None:
         reply_markup=currency_keyboard,
         parse_mode="HTML"
     )
+
+#################################
 
 @Currency_Router.message(F.text == 'Основные валюты🚀')
 async def world_currency(message: Message) -> None:
@@ -73,6 +76,8 @@ async def world_currency(message: Message) -> None:
         parse_mode="HTML"
     )
 
+#################################
+
 @Currency_Router.message(F.text == 'Поиск валюты 🔍')
 async def search_currency(message: Message):
     await message.answer(
@@ -83,14 +88,53 @@ async def search_currency(message: Message):
         '<i>Номер</i>\n'
         '<u><b>Ввод не чувствителен к регистру</b></u>.'
         'Также возможно выбрать курс валюты на заданную дату.\n'
-        'Крайняя дата: 01.07.1992 - Сегодня\n',
+        f'Крайняя дата: 01.07.1992 - {date.today().strftime('%d.%m.%Y')}\n',
         parse_mode="HTML"
     )
     await message.answer(
+        'На какую дату вывести информацию.\n'
+        '↓↓↓',
+        reply_markup=select_date
+    )
+
+
+@Currency_Router.callback_query(F.data == 'today')
+async def today_date(callback: CallbackQuery):
+    await callback.message.delete()
+    await callback.message.answer(
         'Можете вывести данные о всех валютах в pdf файле '
         '(Название, тикер, код)',
         reply_markup=show_all_currency
     )
+
+@Currency_Router.callback_query(F.data == 'another_date')
+async def get_another_date(callback: CallbackQuery, state: FSMContext):
+    await callback.message.delete()
+    await callback.message.answer(
+        'Введите дату. Правильный формат (день.месяц.год)\n'
+        'Пример: 02.07.2022'
+    )
+    await state.set_state(Need_Currency.user_date)
+
+@Currency_Router.message(Need_Currency.user_date)
+async def set_user_date(message: Message, state: FSMContext):
+    try:
+        right_format = datetime.strptime(message.text,'%d.%m.%Y').strftime("%d/%m/%Y")
+        await state.update_data(user_date=right_format)
+
+        await message.answer(
+            'Можете вывести данные о всех валютах в pdf файле '
+            '(Название, тикер, код)',
+            reply_markup=show_all_currency
+        )
+
+    except Exception:
+        await state.clear()
+        await message.answer(
+            '<b>Дата в неправильном формате.</b>',
+            parse_mode="HTML",
+            reply_markup=currency_keyboard
+        )
 
 @Currency_Router.callback_query(F.data == 'get_all_currency')
 async def get_pdf_currency(callback: CallbackQuery, state: FSMContext):
@@ -121,8 +165,14 @@ async def skip_all_currency(callback: CallbackQuery, state: FSMContext):
 @Currency_Router.message(Need_Currency.user_input)
 async def get_find_currency(message: Message, state: FSMContext):
     await state.update_data(user_input=message.text)
+    data = await state.get_data()
+    user_date = data['user_date'] if 'user_date' in data else date.today().strftime("%d/%m/%Y")
+
     async with CBRClient() as client:
-        information = await client.find_currency(message.text)
+        information = await client.find_currency(
+            message.text,
+            user_date
+        )
 
     if information is None:
         await message.answer(
@@ -160,10 +210,10 @@ async def get_find_currency(message: Message, state: FSMContext):
     )
     await message.answer(
         f'Курс {currency_name} по ЦБ РФ на дату: '
-        f'<u>{date.today().strftime('%d.%m.%Y')}</u>',
+        f'<u>{user_date}</u>',
         reply_markup=currency_keyboard,
         parse_mode="HTML"
     )
     await state.clear()
 
-    
+#################################   
