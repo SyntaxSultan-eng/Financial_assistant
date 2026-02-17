@@ -33,7 +33,7 @@ class CBRClient:
             'ttl': time.time() + 3600 # Время жизни - 1 час.
         }
 
-    def get_data_from_cache(self, id=None):
+    def get_data_from_cache(self, id):
         if time.time() > self.cache[id]['ttl']:
             return None
         return self.cache[id]['data']
@@ -51,6 +51,7 @@ class CBRClient:
             return None
     
     async def get_popular_currency(self) -> list:
+        print(self.cache)
         id = 'today-currency'
 
         if id in self.cache:
@@ -83,13 +84,15 @@ class CBRClient:
         return data
     
     async def find_currency(self, name: str, date: str) -> tuple:
+        print(self.cache)
         id = name.lower()
 
-        if id in self.cache and date in self.cache:
-            data = self.get_data_from_cache(id)
-            print('кэш')
-            if data:
-                return data
+        if id in self.cache:
+            if date in self.cache[id]:
+                data = self.get_data_from_cache(id)
+                print('кэш')
+                if data:
+                    return data
             
         root = await self.get_data_xml(date=date)
 

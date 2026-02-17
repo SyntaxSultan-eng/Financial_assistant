@@ -166,7 +166,7 @@ async def skip_all_currency(callback: CallbackQuery, state: FSMContext):
 async def get_find_currency(message: Message, state: FSMContext):
     await state.update_data(user_input=message.text)
     data = await state.get_data()
-    user_date = data['user_date'] if 'user_date' in data else date.today().strftime("%d/%m/%Y")
+    user_date = data['user_date'] if 'user_date' in data else None
 
     async with CBRClient() as client:
         information = await client.find_currency(
@@ -202,6 +202,7 @@ async def get_find_currency(message: Message, state: FSMContext):
     currency_nums = information[2]
     currency_name = information[3]
     currency_value = information[4]
+    current_date = information[5]
     
     await message.answer(
         f'💵{currency_nums} {сurrency_codename} '
@@ -210,7 +211,7 @@ async def get_find_currency(message: Message, state: FSMContext):
     )
     await message.answer(
         f'Курс {currency_name} по ЦБ РФ на дату: '
-        f'<u>{user_date}</u>',
+        f'<u>{current_date}</u>',
         reply_markup=currency_keyboard,
         parse_mode="HTML"
     )
