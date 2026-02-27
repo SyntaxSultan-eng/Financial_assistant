@@ -2,6 +2,7 @@ import aiohttp
 import xml.etree.ElementTree as ET
 import asyncio
 import time
+from datetime import date
 
 # Для тестирования этого файла использовать
 # python -m services.currency_service
@@ -12,12 +13,71 @@ from config import config
 
 #############################
 
+class Cache:
+    """Класс для работы с кэшем для парсера валют"""
+
+    def __init__(self):
+        self.today_cache = config.cache.today_currency_cache # Кэш для дат на сегодня
+        self.find_cache = config.cache.find_currency_cache # Кэш для поиска валют
+
+    def set_data_in_today_cache(self, data):
+        today = date.today().strftime('%d.%m.%Y')
+
+        self.today_cache[today] = {
+            'data' : data,
+            'ttl': time.time() + config.cache.cache_TTL['popular']
+        }
+
+    def set_data_in_find_cache(self, data, id_date, user_input):
+        if id_date is None:
+            id_date = date.today().strftime('%d.%m.%Y')
+
+        self.find_cache[f'{user_input}|{id_date}'] = {
+            'data' : data,
+            'ttl': time.time() + config.cache.cache_TTL['find']
+        }
+    
+    def get_data_from_today_cache(self, id_date):
+        self.clear_old_cache()
+        data = self.today_cache.get(id_date)
+
+        if data and time.time() < data['ttl']:
+            return data['data']
+        return None
+
+    def get_data_from_find_cache(self, info, id_date):
+        self.clear_old_cache()
+        data = self.find_cache.get(f'{info}|{id_date}')
+
+        if data and time.time() < data['ttl']:
+            return data['data']
+        return None
+    
+    #TODO исправить данный метод(неэффективен)
+    def clear_old_cache(self):
+        bad_keys_today_cache = []
+        bad_keys_find_cache = []
+        for key in self.today_cache:
+            if time.time() > self.today_cache[key]['ttl']:
+                bad_keys_today_cache.append(key)
+        
+        for key in bad_keys_today_cache:
+            self.today_cache.pop(key)
+
+        for key in self.find_cache:
+            if time.time() > self.find_cache[key]['ttl']:
+                bad_keys_find_cache.append(key)
+
+        for key in bad_keys_find_cache:
+            self.find_cache.pop(key)
+
+
 class CBRClient:
     """Класс для парсинга валют с Центробанка"""
 
     def __init__(self):
         self.session = None
-        self.cache = config.cbr.cache # Простой кэш
+        self.cache = Cache()
 
     async def __aenter__(self): # Функция для входа/выхода из контекстного менеджера
         self.session = aiohttp.ClientSession()
@@ -26,17 +86,6 @@ class CBRClient:
     async def __aexit__(self, *args):
         if self.session:
             await self.session.close()
-
-    def set_data_in_cache(self, data, id):
-        self.cache[id] = {
-            'data' : data,
-            'ttl': time.time() + 3600 # Время жизни - 1 час.
-        }
-
-    def get_data_from_cache(self, id):
-        if time.time() > self.cache[id]['ttl']:
-            return None
-        return self.cache[id]['data']
 
     async def get_data_xml(self, date=None):
         url = config.cbr.currency_url
@@ -50,14 +99,13 @@ class CBRClient:
         except Exception:
             return None
     
-    async def get_popular_currency(self) -> list:
-        print(self.cache)
-        id = 'today-currency'
+    async def get_popular_currency(self, id_date : str) -> list:
+        print(self.cache.today_cache)
 
-        if id in self.cache:
-            data = self.get_data_from_cache(id)
-            if data:
-                return data
+        data = self.cache.get_data_from_today_cache(id_date)
+        if data:
+            print('из кэша')
+            return data
 
         root = await self.get_data_xml()
 
@@ -77,22 +125,19 @@ class CBRClient:
                 )
                 data.append(information)
 
-        self.set_data_in_cache(
+        self.cache.set_data_in_today_cache(
             data=data,
-            id=id
         )
+        print('не из кэша')
         return data
     
     async def find_currency(self, name: str, date: str) -> tuple:
-        print(self.cache)
-        id = name.lower()
+        print(self.cache.find_cache)
 
-        if id in self.cache:
-            if date in self.cache[id]:
-                data = self.get_data_from_cache(id)
-                print('кэш')
-                if data:
-                    return data
+        data = self.cache.get_data_from_find_cache(name.lower(), date)
+        if data:
+            print('кэш')
+            return data
             
         root = await self.get_data_xml(date=date)
 
@@ -116,9 +161,10 @@ class CBRClient:
                     root.attrib['Date']
                 )
 
-                self.set_data_in_cache(
-                    data=information,
-                    id=id
+                self.cache.set_data_in_find_cache(
+                    user_input=name.lower(),
+                    id_date=date,
+                    data=information
                 )
                 print(information, 'не кэш')
                 return information

@@ -40,8 +40,11 @@ async def currency_menu(message: Message) -> None:
 
 @Currency_Router.message(F.text == 'Основные валюты🚀')
 async def world_currency(message: Message) -> None:
+
+    today_date = date.today().strftime('%d.%m.%Y')
+
     async with CBRClient() as client:
-        info_world_currency = await client.get_popular_currency()
+        info_world_currency = await client.get_popular_currency(today_date)
         
     if info_world_currency is None:
         await message.answer(
@@ -166,7 +169,7 @@ async def skip_all_currency(callback: CallbackQuery, state: FSMContext):
 async def get_find_currency(message: Message, state: FSMContext):
     await state.update_data(user_input=message.text)
     data = await state.get_data()
-    user_date = data['user_date'] if 'user_date' in data else None
+    user_date = data['user_date'] if 'user_date' in data else date.today().strftime('%d/%m/%Y')
 
     async with CBRClient() as client:
         information = await client.find_currency(

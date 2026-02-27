@@ -13,6 +13,17 @@ class BotConfig:
         if not self.api_key:
             raise ValueError('Отсутствует ключ бота.')
 
+class ParcerCache:
+    """Класс для хранения кэша для парсера"""
+
+    def __init__(self):
+        self.today_currency_cache = {}
+        self.find_currency_cache = {}
+        self.cache_TTL = {
+            'popular' : 60, # 6 часов
+            'find' : 3600
+        }
+
 class CBR_ParcerConfig:
     """Класс для хранения url парсера api Центробанка"""
 
@@ -26,7 +37,6 @@ class CBR_ParcerConfig:
     )
 
     def __init__(self):
-        self.cache = {}
         self.currency_url = 'http://www.cbr.ru/scripts/XML_daily.asp'
         self.pdf_file_url = os.path.join('config','requirements','currency.pdf')
 
@@ -36,6 +46,7 @@ class AppConfig:
     def __init__(self):
         load_dotenv()
         self.bot = BotConfig()
+        self.cache = ParcerCache()
         self.cbr = CBR_ParcerConfig()
 
 
